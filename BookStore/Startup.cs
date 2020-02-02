@@ -19,6 +19,10 @@ using Microsoft.OpenApi.Models;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using BookStore.Services;
+using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Cors.Infrastructure;
+
 
 namespace BookStore
 {
@@ -34,9 +38,20 @@ namespace BookStore
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll",
+                    builder =>
+                    {
+                        builder
+                        .AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader();
+                    });
+            });
             services.AddControllers();
-            services.AddMvc();
 
+            
             services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection"))); services.AddDbContext<AppDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
@@ -66,6 +81,10 @@ namespace BookStore
                         ClockSkew = TimeSpan.Zero // remove delay of token when expire
                     };
                 });
+            
+
+
+            services.AddScoped<IAccService, AccService>();
 
             services.AddSwaggerGen(c =>
             {
@@ -76,22 +95,13 @@ namespace BookStore
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, UserManager<AppUser> userManager, RoleManager<AppRoles> roleManager)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-
+            
             IdentityDataInit.SeedData(userManager, roleManager);
 
-            app.UseHttpsRedirection();
-
             app.UseRouting();
-
+            app.UseCors("AllowAll");
             app.UseAuthentication();
-            //app.UseMvc();
-
-
-            app.UseDeveloperExceptionPage();
+            app.UseAuthorization();
 
             app.UseSwagger();
 

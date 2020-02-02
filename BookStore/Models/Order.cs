@@ -22,5 +22,6 @@ namespace BookStore.Models
         public string Number { get; set; }
         public decimal Total { get; set; }
         public DateTime OrderDate { get; set; }
+        public List<OrderDetail> OrderDetails { get; set; }
     }
 }

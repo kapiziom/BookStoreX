@@ -20,7 +20,7 @@ namespace BookStore.Models
         public string ISBN_13 { get; set; }
         public string CoverLink { get; set; }
         public decimal Price { get; set; }
-        public Authors Authors { get; set; }
+        public string Author { get; set; }
         public Categories Category { get; set; }
         public Languages Language { get; set; }
 

@@ -14,6 +14,7 @@ using BookStore.ViewModels;
 using BookStore.Models;
 using Microsoft.AspNetCore.Authorization;
 using System.Net;
+using BookStore.Services;
 
 namespace BookStore.Controllers
 {
@@ -24,22 +25,25 @@ namespace BookStore.Controllers
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
         private readonly IConfiguration _configuration;
+        private readonly IAccService _accService;
 
         public AccountController(
             UserManager<AppUser> userManager,
             SignInManager<AppUser> signInManager,
-            IConfiguration configuration)
-        {
+            IConfiguration configuration,
+            IAccService accService)
+        {            
             _configuration = configuration;
             _userManager = userManager;
             _signInManager = signInManager;
+            _accService = accService;
         }
 
         [Authorize]
         [HttpGet("Protected")]
         public async Task<object> Protected()
         {
-            return "Protected area";
+            return "protected area";
         }
 
         [HttpPost("Login")]        
