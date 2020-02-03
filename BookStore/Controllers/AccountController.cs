@@ -66,31 +66,23 @@ namespace BookStore.Controllers
         }
 
         [HttpPost("Register")]
-        [ProducesResponseType(typeof(object), 200)]
-        [ProducesResponseType(409)]
         public async Task<object> Register([FromBody] RegisterVM model)
         {
-            if (ModelState.IsValid)
-            {
-                var SearchUsedEmail = await _userManager.FindByEmailAsync(model.Email);
-                var SearchUsedName = await _userManager.FindByNameAsync(model.UserName);
-                if(SearchUsedEmail != null || SearchUsedName != null)
-                {
-                    return Conflict();
-                }
-                var user = new AppUser { UserName = model.UserName, Email = model.Email, CreationDate = DateTime.Now };
+            var user = new AppUser { UserName = model.UserName, Email = model.Email, CreationDate = DateTime.Now };
+
+             try
+             { 
+                var CheckEmail = await _userManager.FindByEmailAsync(model.Email);
+                var CheckUsername = await _userManager.FindByNameAsync(model.UserName);
                 var result = await _userManager.CreateAsync(user, model.Password);
-                if (result.Succeeded)
-                {
-                    await _userManager.AddToRoleAsync(user, "NormalUser");
-                    await _signInManager.SignInAsync(user, isPersistent: false);
-                    return await GenerateJwtToken(model.Email, user);
-                }
-                else
-                    return BadRequest();
-            }
-            else
-                return BadRequest();
+                await _userManager.AddToRoleAsync(user, "NormalUser");
+                    
+                return Ok(result);
+             }
+             catch (Exception ex)
+             {
+                throw ex;
+             }
         }
 
 
