@@ -15,6 +15,7 @@ using BookStore.Models;
 using Microsoft.AspNetCore.Authorization;
 using System.Net;
 using BookStore.Services;
+using Microsoft.Extensions.Options;
 
 namespace BookStore.Controllers
 {
@@ -26,43 +27,51 @@ namespace BookStore.Controllers
         private readonly SignInManager<AppUser> _signInManager;
         private readonly IConfiguration _configuration;
         private readonly IAccService _accService;
+        private readonly ApplicationSettings _appSettings;
 
         public AccountController(
             UserManager<AppUser> userManager,
             SignInManager<AppUser> signInManager,
             IConfiguration configuration,
-            IAccService accService)
+            IAccService accService,
+            IOptions<ApplicationSettings> appSettings)
         {            
             _configuration = configuration;
             _userManager = userManager;
             _signInManager = signInManager;
             _accService = accService;
+            _appSettings = appSettings.Value;
         }
 
-        [Authorize]
-        [HttpGet("Protected")]
-        public async Task<object> Protected()
+        [HttpPost]
+        [Route("Login")]
+        //POST : /api/ApplicationUser/Login
+        public async Task<IActionResult> Login(LoginVM model)
         {
-            return "protected area";
-        }
-
-        [HttpPost("Login")]        
-        public async Task<object> Login([FromBody] LoginVM model)
-        {
-            var CheckUserName = await _userManager.FindByNameAsync(model.UserName);
-            if(CheckUserName == null)
+            var user = await _userManager.FindByNameAsync(model.UserName);
+            if (user != null && await _userManager.CheckPasswordAsync(user, model.Password))
             {
-                return NotFound(model.UserName);
-            }
-            var result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, false, false);
+                //get assigned role
+                var role = await _userManager.GetRolesAsync(user);
+                IdentityOptions _options = new IdentityOptions();
 
-            if (result.Succeeded)
-            {
-                var appUser = _userManager.Users.SingleOrDefault(r => r.UserName == model.UserName);
-                return await GenerateJwtToken(appUser.Email, appUser);
+                var tokenDescriptor = new SecurityTokenDescriptor
+                {
+                    Subject = new ClaimsIdentity(new Claim[]
+                    {
+                        new Claim("UserID",user.Id.ToString()),
+                        new Claim(_options.ClaimsIdentity.RoleClaimType, role.FirstOrDefault())
+                    }),
+                    Expires = DateTime.UtcNow.AddDays(1),
+                    SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_appSettings.JWT_Secret)), SecurityAlgorithms.HmacSha256Signature)
+                };
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var securityToken = tokenHandler.CreateToken(tokenDescriptor);
+                var token = tokenHandler.WriteToken(securityToken);
+                return Ok(new { token });
             }
-
-            throw new ApplicationException("INVALID_LOGIN_ATTEMPT");
+            else
+                return BadRequest(new { message = "Username or password is incorrect." });
         }
 
         [HttpPost("Register")]
@@ -86,28 +95,6 @@ namespace BookStore.Controllers
         }
 
 
-        private async Task<object> GenerateJwtToken(string email, AppUser user)
-        {
-            var claims = new List<Claim>
-            {
-                new Claim(JwtRegisteredClaimNames.Sub, email),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(ClaimTypes.NameIdentifier, user.Id)
-            };
-
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtKey"]));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var expires = DateTime.Now.AddDays(Convert.ToDouble(_configuration["JwtExpireDays"]));
-
-            var token = new JwtSecurityToken(
-                _configuration["JwtIssuer"],
-                _configuration["JwtIssuer"],
-                claims,
-                expires: expires,
-                signingCredentials: creds
-            );
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
-        }
+        
     }
 }
