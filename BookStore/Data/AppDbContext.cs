@@ -15,7 +15,6 @@ namespace BookStore.Data
         {
         }
 
-        public DbSet<Address> Addresses { get; set; }
         public DbSet<Books> Books { get; set; }
         public DbSet<Cart> Carts { get; set; }
         public DbSet<Categories> Categories { get; set; }
@@ -27,10 +26,6 @@ namespace BookStore.Data
         {
             base.OnModelCreating(builder);
 
-            builder.Entity<AppUser>()
-                .HasOne(a => a.Address)
-                .WithOne(b => b.AppUser)
-                .HasForeignKey<Address>(b => b.AppUserID);
             builder.Entity<OrderDetail>()
                 .HasOne(a => a.Order)
                 .WithMany(b => b.OrderDetails);

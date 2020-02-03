@@ -8,7 +8,6 @@ namespace BookStore.Models
 {
     public class AppUser : IdentityUser
     {
-        public Address Address { get; set; }
         public DateTime CreationDate { get; set; }
     }
 }
