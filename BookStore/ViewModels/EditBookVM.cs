@@ -1,19 +1,17 @@
-﻿using System;
+﻿using BookStore.Models;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace BookStore.Models
+namespace BookStore.ViewModels
 {
-    public class Books
+    public class EditBookVM
     {
-        [Key]
         public int BookId { get; set; }
         public string Title { get; set; }
         public string Publisher { get; set; }
         public DateTime PublishedDate { get; set; }
-        public DateTime AddedToStore { get; set; }
         public string Description { get; set; }
         public int PageCount { get; set; }
         public string ISBN_10 { get; set; }
@@ -22,7 +20,6 @@ namespace BookStore.Models
         public decimal Price { get; set; }
         public string Author { get; set; }
         public Categories Category { get; set; }
-        public int CategoryID { get; set; }
         public int Sold { get; set; }
         public int InStock { get; set; }
         public bool IsDiscount { get; set; }

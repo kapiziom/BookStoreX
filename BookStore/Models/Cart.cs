@@ -10,8 +10,7 @@ namespace BookStore.Models
     {
         [Key]
         public int CartId { get; set; }
-        public int BookID { get; set; }
-        public Books Books { get; set; }
-        public int NumberOfBooks { get; set; }
+       
+        public List<CartElement> CartElements { get; set; }
     }
 }

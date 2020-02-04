@@ -19,10 +19,10 @@ using Microsoft.OpenApi.Models;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using BookStore.Services;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.Extensions.Options;
+using BookStore.Repository;
 
 namespace BookStore
 {
@@ -93,9 +93,9 @@ namespace BookStore
                 };
             });
 
-
-            services.AddScoped<IAccService, AccService>();
-
+            services.AddScoped<ICategoryRepository,CategoryRepository>();
+            services.AddScoped<IBooksRepository,BooksRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });

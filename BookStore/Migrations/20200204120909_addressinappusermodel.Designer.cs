@@ -4,14 +4,16 @@ using BookStore.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace BookStore.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200204120909_addressinappusermodel")]
+    partial class addressinappusermodel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -79,9 +81,6 @@ namespace BookStore.Migrations
 
                     b.Property<string>("FirstName")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("LastEdit")
-                        .HasColumnType("datetime2");
 
                     b.Property<string>("LastName")
                         .HasColumnType("nvarchar(max)");
@@ -154,17 +153,14 @@ namespace BookStore.Migrations
                     b.Property<string>("Author")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("CategoryID")
+                    b.Property<int?>("CategoryId")
                         .HasColumnType("int");
 
-                    b.Property<string>("CoverUri")
+                    b.Property<string>("CoverLink")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal?>("DiscountPrice")
-                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("ISBN_10")
                         .HasColumnType("nvarchar(max)");
@@ -175,8 +171,8 @@ namespace BookStore.Migrations
                     b.Property<int>("InStock")
                         .HasColumnType("int");
 
-                    b.Property<bool>("IsDiscount")
-                        .HasColumnType("bit");
+                    b.Property<int?>("LanguageLangId")
+                        .HasColumnType("int");
 
                     b.Property<int>("PageCount")
                         .HasColumnType("int");
@@ -198,7 +194,9 @@ namespace BookStore.Migrations
 
                     b.HasKey("BookId");
 
-                    b.HasIndex("CategoryID");
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("LanguageLangId");
 
                     b.ToTable("Books");
                 });
@@ -228,7 +226,7 @@ namespace BookStore.Migrations
                     b.Property<int?>("BooksBookId")
                         .HasColumnType("int");
 
-                    b.Property<int>("CartID")
+                    b.Property<int?>("CartId")
                         .HasColumnType("int");
 
                     b.Property<int>("NumberOfBooks")
@@ -238,7 +236,7 @@ namespace BookStore.Migrations
 
                     b.HasIndex("BooksBookId");
 
-                    b.HasIndex("CartID");
+                    b.HasIndex("CartId");
 
                     b.ToTable("CartElements");
                 });
@@ -256,6 +254,24 @@ namespace BookStore.Migrations
                     b.HasKey("CategoryId");
 
                     b.ToTable("Categories");
+                });
+
+            modelBuilder.Entity("BookStore.Models.Languages", b =>
+                {
+                    b.Property<int>("LangId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("LangName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LangShortName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("LangId");
+
+                    b.ToTable("Languages");
                 });
 
             modelBuilder.Entity("BookStore.Models.Order", b =>
@@ -276,9 +292,6 @@ namespace BookStore.Migrations
 
                     b.Property<string>("FirstName")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsShipped")
-                        .HasColumnType("bit");
 
                     b.Property<string>("LastName")
                         .HasColumnType("nvarchar(max)");
@@ -447,10 +460,12 @@ namespace BookStore.Migrations
             modelBuilder.Entity("BookStore.Models.Books", b =>
                 {
                     b.HasOne("BookStore.Models.Categories", "Category")
-                        .WithMany()
-                        .HasForeignKey("CategoryID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .WithMany("Books")
+                        .HasForeignKey("CategoryId");
+
+                    b.HasOne("BookStore.Models.Languages", "Language")
+                        .WithMany("Books")
+                        .HasForeignKey("LanguageLangId");
                 });
 
             modelBuilder.Entity("BookStore.Models.CartElement", b =>
@@ -461,9 +476,7 @@ namespace BookStore.Migrations
 
                     b.HasOne("BookStore.Models.Cart", "Cart")
                         .WithMany("CartElements")
-                        .HasForeignKey("CartID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CartId");
                 });
 
             modelBuilder.Entity("BookStore.Models.OrderDetail", b =>
@@ -473,7 +486,7 @@ namespace BookStore.Migrations
                         .HasForeignKey("BooksBookId");
 
                     b.HasOne("BookStore.Models.Order", "Order")
-                        .WithMany()
+                        .WithMany("OrderDetails")
                         .HasForeignKey("OrderID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();

@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace BookStore.Models
+namespace BookStore.ViewModels
 {
-    public class Categories
+    public class CategoriesVM
     {
-        [Key]
         public int CategoryId { get; set; }
-        
         public string CategoryName { get; set; }
     }
 }

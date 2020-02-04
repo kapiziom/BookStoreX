@@ -14,8 +14,8 @@ using BookStore.ViewModels;
 using BookStore.Models;
 using Microsoft.AspNetCore.Authorization;
 using System.Net;
-using BookStore.Services;
 using Microsoft.Extensions.Options;
+using BookStore.Repository;
 
 namespace BookStore.Controllers
 {
@@ -26,21 +26,21 @@ namespace BookStore.Controllers
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
         private readonly IConfiguration _configuration;
-        private readonly IAccService _accService;
         private readonly ApplicationSettings _appSettings;
+        private readonly IUserRepository _userRepository;
 
         public AccountController(
             UserManager<AppUser> userManager,
             SignInManager<AppUser> signInManager,
             IConfiguration configuration,
-            IAccService accService,
-            IOptions<ApplicationSettings> appSettings)
+            IOptions<ApplicationSettings> appSettings,
+            IUserRepository userRepository)
         {            
             _configuration = configuration;
             _userManager = userManager;
             _signInManager = signInManager;
-            _accService = accService;
             _appSettings = appSettings.Value;
+            _userRepository = userRepository;
         }
 
         [HttpPost]

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BookStore.Models;
+using BookStore.Repository;
+using BookStore.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -15,10 +17,12 @@ namespace BookStore.Controllers
     public class UserProfileController : ControllerBase
     {
         private readonly UserManager<AppUser> _userManager;
+        private readonly IUserRepository _userRepository;
 
-        public UserProfileController(UserManager<AppUser> userManager)
+        public UserProfileController(UserManager<AppUser> userManager, IUserRepository userRepository)
         {
             _userManager = userManager;
+            _userRepository = userRepository;
         }
 
         [HttpGet("UserProfile")]
@@ -30,36 +34,71 @@ namespace BookStore.Controllers
             return new
             {
                 user.UserName,
-                user.Email
+                user.Email,
+                user.CreationDate
             };
         }
 
-        [HttpGet("Admin")]
-        [Authorize(Roles = "Administrator")]
-        public string GetForAdmin()
+        [HttpGet("Address")]
+        [Authorize]
+        public async Task<object> GetAddress()
         {
-            return "Method for admin";
+            string userId = User.Claims.First(c => c.Type == "UserID").Value;
+            var user = await _userManager.FindByIdAsync(userId);
+            return new
+            {
+                user.UserName,
+                user.FirstName,
+                user.LastName,
+                user.Country,
+                user.City,
+                user.PostalCode,
+                user.Street,
+                user.Number,
+                user.PhoneNumber,
+                user.LastEdit
+            };
         }
 
-        [HttpGet("NormalUser")]
-        [Authorize(Roles = "NormalUser")]
-        public string GetNormalUser()
+
+        [HttpPut("Address")]
+        [Authorize]
+        public IActionResult EditAddress(AddressVM address)
         {
-            return "Method for normal user";
+            _userRepository.EditUserAddress(address);
+            return Ok();
         }
 
-        [HttpGet("Worker")]
-        [Authorize(Roles = "Worker,Administrator")]
-        public string GetForWorker()
+        [HttpPut("UserProfile")]
+        [Authorize]
+        public IActionResult EditUserProfile(AddressVM address)
         {
-            return "Method for worker";
+            _userRepository.EditUserAddress(address);
+            return Ok();
         }
 
-        [HttpGet("ForEveryone")]
-        [Authorize(Roles = "Worker,Administrator,NormalUser")]
-        public string GetForEveryone()
+        [HttpPut("ChangePassword")]
+        [Authorize]
+        public async Task<object> ChangePassword(ChangePasswordVM changePasswordVM)
         {
-            return "Method for everyone";
+            string userId = User.Claims.First(c => c.Type == "UserID").Value;
+            var user = await _userManager.FindByIdAsync(userId);
+            try
+            {
+                var result = await _userManager.ChangePasswordAsync(user, changePasswordVM.OldPassword, changePasswordVM.NewPassword);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        [HttpGet("ShoppingHistory")]
+        [Authorize]
+        public IActionResult ShoppingHistory()
+        {
+            return NotFound();
         }
     }
 }
