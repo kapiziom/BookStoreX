@@ -15,7 +15,7 @@ namespace BookStore.ViewModels
         public string CoverUri { get; set; }
         public decimal Price { get; set; }
         public string Author { get; set; }
-        public Categories Category { get; set; }
+        public string Category { get; set; }
         public bool IsDiscount { get; set; }
         public decimal? DiscountPrice { get; set; }
     }

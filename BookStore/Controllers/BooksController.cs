@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using BookStore.Repository;
 using BookStore.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -41,7 +42,8 @@ namespace BookStore.Controllers
             return book;
         }
 
-        [HttpPost("Books")]
+        [HttpPost]
+        [Authorize(Roles = "Administrator,Worker")]
         public IActionResult PostBook([FromBody] CreateBookVM book)
         {
             _booksRepository.PostBook(book);
@@ -49,6 +51,7 @@ namespace BookStore.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Administrator,Worker")]
         public IActionResult PutBook([FromBody] EditBookVM book, int id)
         {
             

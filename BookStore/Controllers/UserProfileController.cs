@@ -74,6 +74,10 @@ namespace BookStore.Controllers
         [Authorize]
         public IActionResult EditUserProfile(EditMailUsernameVM user)
         {
+            if (_userRepository.CheckBaseUsername(user.UserName) == true || _userRepository.CheckBaseEmail(user.Email) == true)
+            {
+                return Conflict();
+            }
             string userId = User.Claims.First(c => c.Type == "UserID").Value;
             _userRepository.EditUserProfile(user, userId);
             return Ok();
@@ -96,12 +100,6 @@ namespace BookStore.Controllers
             }
         }
 
-        [HttpGet("ShoppingHistory")]
-        [Authorize]
-        public IActionResult ShoppingHistory()
-        {
-            string userId = User.Claims.First(c => c.Type == "UserID").Value;
-            return NotFound();
-        }
+        
     }
 }

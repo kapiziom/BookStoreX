@@ -11,6 +11,7 @@ namespace BookStore.Repository
         AddressVM GetUserAddress(string userId);
         void EditUserAddress(EditAddressVM address, string userId);
         void EditUserProfile(EditMailUsernameVM user, string userId);
-        bool CheckBaseUsernameEmail();//return true if element is in baze
+        bool CheckBaseUsername(string username);//return true if element is in baze
+        bool CheckBaseEmail(string email);
     }
 }

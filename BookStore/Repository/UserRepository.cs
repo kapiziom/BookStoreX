@@ -65,10 +65,30 @@ namespace BookStore.Repository
             _appDbContext.SaveChanges();
         }
 
-        public bool CheckBaseUsernameEmail()
+        public bool CheckBaseUsername(string username)
         {
+            var user = _appDbContext.Users.FirstOrDefault(x => x.UserName == username);
+            if(user != null)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
 
-            return true;
+        public bool CheckBaseEmail(string email)
+        {
+            var user = _appDbContext.Users.FirstOrDefault(x => x.Email == email);
+            if (user != null)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
     }

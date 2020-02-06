@@ -33,7 +33,7 @@ namespace BookStore.Repository
                     Author = b.Author,
                     IsDiscount = b.IsDiscount,
                     DiscountPrice = b.DiscountPrice,
-                    Category = b.Category
+                    Category = b.Category.CategoryName
                 };
                 books.Add(book);
             }
@@ -60,7 +60,7 @@ namespace BookStore.Repository
                 CoverUri = b.CoverUri,
                 Price = b.Price,
                 Author = b.Author,
-                category = b.Category,
+                Category = b.Category.CategoryName,
                 Sold = b.Sold,
                 InStock = b.InStock,
                 IsDiscount = b.IsDiscount,
@@ -113,6 +113,19 @@ namespace BookStore.Repository
             b.IsDiscount = m.IsDiscount;
             b.DiscountPrice = m.DiscountPrice;
             _appDbContext.SaveChanges();
+        }
+
+        public decimal GetBookPrice(int bookId)
+        {
+            var b = _appDbContext.Books.FirstOrDefault(x => x.BookId == bookId);
+            if(b.IsDiscount == false)
+            {
+                return b.Price;
+            }
+            else
+            {
+                return b.DiscountPrice.Value;
+            }
         }
     }
 }

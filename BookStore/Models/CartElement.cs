@@ -12,10 +12,10 @@ namespace BookStore.Models
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int CartElementId { get; set; }
+        public AppUser AppUser { get; set; }
+        public string UserId { get; set; }
         public int BookID { get; set; }
         public Books Books { get; set; }
         public int NumberOfBooks { get; set; }
-        public Cart Cart { get; set; }
-        public int CartID { get; set; }
     }
 }

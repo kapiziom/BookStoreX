@@ -93,6 +93,7 @@ namespace BookStore
                 };
             });
 
+            services.AddScoped<ICartOrderRepository, CartOrderRepository>();
             services.AddScoped<ICategoryRepository,CategoryRepository>();
             services.AddScoped<IBooksRepository,BooksRepository>();
             services.AddScoped<IUserRepository, UserRepository>();

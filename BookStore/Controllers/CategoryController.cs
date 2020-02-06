@@ -6,6 +6,7 @@ using System.Web.Helpers;
 using BookStore.Models;
 using BookStore.Repository;
 using BookStore.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -31,6 +32,7 @@ namespace BookStore.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Administrator,Worker")]
         public IActionResult PostCategory([FromBody] CreateCategoryVM category)
         {
             if(_categoryRepository.CheckBase(category.CategoryName) == true)
@@ -45,6 +47,7 @@ namespace BookStore.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Administrator,Worker")]
         public IActionResult PutCategory([FromBody] CreateCategoryVM category)
         {
             _categoryRepository.PutCategory(category);
@@ -52,6 +55,7 @@ namespace BookStore.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Administrator,Worker")]
         public IActionResult DeleteCategory(int id)
         {
             _categoryRepository.DeleteCategory(id);

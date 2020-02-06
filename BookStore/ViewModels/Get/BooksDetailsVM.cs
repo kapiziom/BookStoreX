@@ -20,7 +20,7 @@ namespace BookStore.ViewModels
         public string CoverUri { get; set; }
         public decimal Price { get; set; }
         public string Author { get; set; }
-        public Categories category { get; set; }
+        public string Category { get; set; }
         public int Sold { get; set; }
         public int InStock { get; set; }
         public bool IsDiscount { get; set; }

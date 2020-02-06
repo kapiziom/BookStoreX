@@ -1,0 +1,144 @@
+﻿using BookStore.Data;
+using BookStore.Models;
+using BookStore.ViewModels;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace BookStore.Repository
+{
+    public class CartOrderRepository : ICartOrderRepository
+    {
+        private readonly AppDbContext _appDbContext;
+        private readonly IBooksRepository _booksRepository;
+
+        public CartOrderRepository(AppDbContext appDbContext, IBooksRepository booksRepository)
+        {
+            _appDbContext = appDbContext;
+            _booksRepository = booksRepository;
+        }
+
+        public void AddToCart(AddCartElementVM addcart, string userId)
+        {
+            var book = _appDbContext.Books.FirstOrDefault(b => b.BookId == addcart.BookID);
+            CartElement cartElement = new CartElement()
+            {
+                UserId = userId,
+                BookID = addcart.BookID,
+                NumberOfBooks = addcart.NumberOfBooks
+            };
+            book.InStock = book.InStock - addcart.NumberOfBooks;
+            _appDbContext.CartElements.Add(cartElement);
+            _appDbContext.SaveChanges();
+        }
+
+
+        public List<CartVM> GetUsersCart(string userId)
+        {
+            IEnumerable<CartElement> cart;
+            cart = _appDbContext.CartElements.Where(c => c.UserId == userId);
+            if(cart == null)
+            {
+                return null;
+            }
+            var cartVM = new List<CartVM>();
+            foreach(var m in cart)
+            {
+                var book = _booksRepository.GetBook(m.BookID);
+                var c = new CartVM()
+                {
+                    BookID = m.BookID,
+                    NumberOfBooks = m.NumberOfBooks,
+                    BookTitle = book.Title,
+                    Price = m.NumberOfBooks * (_booksRepository.GetBookPrice(m.BookID))
+                };
+                cartVM.Add(c);
+            }
+            return cartVM;
+        }
+
+        public void PlaceOrder(string userId)
+        {
+            var user = _appDbContext.Users.FirstOrDefault(x => x.Id == userId);
+            var cart = _appDbContext.CartElements.Where(x => x.UserId == userId);
+            decimal totalprice = 0;
+            Order order = new Order();
+            foreach (var m in cart)
+            {
+                OrderDetail detail = new OrderDetail()
+                {
+                    OrderID = order.OrderId,
+                    BookID = m.BookID,
+                    NumberOfBooks = m.NumberOfBooks,
+                    Price = m.NumberOfBooks * (_booksRepository.GetBookPrice(m.BookID))
+                };
+                _appDbContext.OrderDetails.Add(detail);
+                _appDbContext.CartElements.Remove(m);
+                totalprice = totalprice + detail.Price;
+            }
+            order.UserId = user.Id;
+            order.Username = user.UserName;
+            order.Email = user.Email;
+            order.Phone = user.PhoneNumber;
+            order.FirstName = user.FirstName;
+            order.LastName = user.LastName;
+            order.Country = user.Country;
+            order.City = user.City;
+            order.PostalCode = user.PostalCode;
+            order.Street = user.Street;
+            order.Number = user.Number;
+            order.Total = totalprice;
+            order.OrderDate = DateTime.Now;
+            order.IsShipped = false;
+
+            _appDbContext.Orders.Add(order);
+        }
+
+        public bool DeleteCart(string userId)
+        {
+            var user = _appDbContext.Users.FirstOrDefault(x => x.Id == userId);
+            var cart = _appDbContext.CartElements.Where(x => x.UserId == userId);
+            if(cart == null)
+            {
+                return false;
+            }
+            _appDbContext.CartElements.RemoveRange(cart);
+            _appDbContext.SaveChanges();
+            return true;
+        }
+
+        public List<OrderVM> History(string userId)
+        {
+            var user = _appDbContext.Users.FirstOrDefault(x => x.Id == userId);
+            var o = _appDbContext.Orders.Where(x => x.UserId == userId);
+            List<OrderVM> orderVMs = new List<OrderVM>();
+            foreach(var m in o)
+            {
+                OrderVM order = new OrderVM()
+                {
+                    OrderId = m.OrderId,
+                    Email = m.Email,
+                    OrderDate = m.OrderDate,
+                    TotalPrice = m.Total,
+                    IsShipped = m.IsShipped
+                };
+                orderVMs.Add(order);
+            }
+            return orderVMs;
+        }
+
+        public bool CheckUserOrders(string userId)
+        {
+            var orders = _appDbContext.Orders.Where(x => x.UserId == userId);
+            if(orders != null)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+    }
+}

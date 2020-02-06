@@ -1,16 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace BookStore.Models
+namespace BookStore.ViewModels
 {
-    public class Order
+    public class CreateOrderVM
     {
-        [Key]
-        public int OrderId { get; set; }
-        public string UserId { get; set; }
         public string Username { get; set; }
         public string Email { get; set; }
         public string Phone { get; set; }
@@ -21,9 +17,5 @@ namespace BookStore.Models
         public string PostalCode { get; set; }
         public string Street { get; set; }
         public string Number { get; set; }
-        public decimal Total { get; set; }
-        public DateTime OrderDate { get; set; }
-
-        public bool IsShipped { get; set; }
     }
 }
