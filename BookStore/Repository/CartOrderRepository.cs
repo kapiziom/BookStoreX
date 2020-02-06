@@ -26,7 +26,8 @@ namespace BookStore.Repository
             {
                 UserId = userId,
                 BookID = addcart.BookID,
-                NumberOfBooks = addcart.NumberOfBooks
+                NumberOfBooks = addcart.NumberOfBooks,
+                CreatedDate = DateTime.Now
             };
             book.InStock = book.InStock - addcart.NumberOfBooks;
             _appDbContext.CartElements.Add(cartElement);
@@ -68,7 +69,7 @@ namespace BookStore.Repository
             {
                 OrderDetail detail = new OrderDetail()
                 {
-                    OrderID = order.OrderId,
+                    Order = order,
                     BookID = m.BookID,
                     NumberOfBooks = m.NumberOfBooks,
                     Price = m.NumberOfBooks * (_booksRepository.GetBookPrice(m.BookID))
@@ -93,6 +94,7 @@ namespace BookStore.Repository
             order.IsShipped = false;
 
             _appDbContext.Orders.Add(order);
+            _appDbContext.SaveChanges();
         }
 
         public bool DeleteCart(string userId)
@@ -102,6 +104,11 @@ namespace BookStore.Repository
             if(cart == null)
             {
                 return false;
+            }
+            foreach(var c in cart)
+            {
+                var book = _appDbContext.Books.FirstOrDefault(x => x.BookId == c.BookID);
+                book.InStock = book.InStock + c.NumberOfBooks;
             }
             _appDbContext.CartElements.RemoveRange(cart);
             _appDbContext.SaveChanges();

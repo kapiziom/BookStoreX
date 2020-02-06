@@ -33,7 +33,7 @@ namespace BookStore.Repository
                     Author = b.Author,
                     IsDiscount = b.IsDiscount,
                     DiscountPrice = b.DiscountPrice,
-                    Category = b.Category.CategoryName
+                    Category = b.CategoryName
                 };
                 books.Add(book);
             }
@@ -60,7 +60,7 @@ namespace BookStore.Repository
                 CoverUri = b.CoverUri,
                 Price = b.Price,
                 Author = b.Author,
-                Category = b.Category.CategoryName,
+                Category = b.CategoryName,
                 Sold = b.Sold,
                 InStock = b.InStock,
                 IsDiscount = b.IsDiscount,
@@ -86,6 +86,7 @@ namespace BookStore.Repository
                 Price = b.Price,
                 Author = b.Author,
                 Category = category,
+                CategoryName = category.CategoryName,
                 Sold = 0,
                 InStock = b.InStock
             };
@@ -107,7 +108,8 @@ namespace BookStore.Repository
             b.CoverUri = m.CoverUri;
             b.Price = m.Price;
             b.Author = m.Author;
-            b.Category = m.Category;
+            b.CategoryID = m.CategoryId;
+            b.CategoryName = m.CategoryName;
             b.Sold = m.Sold;
             b.InStock = m.InStock;
             b.IsDiscount = m.IsDiscount;
