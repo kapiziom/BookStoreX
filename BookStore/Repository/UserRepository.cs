@@ -60,15 +60,24 @@ namespace BookStore.Repository
         public void EditUserProfile(EditMailUsernameVM userVM, string userId)
         {
             var user = _appDbContext.Users.FirstOrDefault(u => u.Id == userId);
-            user.UserName = userVM.UserName;
-            user.Email = userVM.Email;
+            if(userVM.UserName != null)
+            {
+                user.UserName = userVM.UserName;
+                user.NormalizedUserName = _userManager.NormalizeName(userVM.UserName);
+            }
+            if(userVM.Email != null)
+            {
+                user.Email = userVM.Email;
+                user.NormalizedEmail = _userManager.NormalizeEmail(userVM.Email);
+            }            
             _appDbContext.SaveChanges();
         }
 
-        public bool CheckBaseUsername(string username)
+        public bool CheckBaseUsername(string username, string userid)
         {
+            var Currentuser = _appDbContext.Users.FirstOrDefault(u => u.Id == userid);
             var user = _appDbContext.Users.FirstOrDefault(x => x.UserName == username);
-            if(user != null)
+            if(user != null && Currentuser != user)
             {
                 return true;
             }
@@ -78,10 +87,11 @@ namespace BookStore.Repository
             }
         }
 
-        public bool CheckBaseEmail(string email)
+        public bool CheckBaseEmail(string email, string userid)
         {
+            var Currentuser = _appDbContext.Users.FirstOrDefault(u => u.Id == userid);
             var user = _appDbContext.Users.FirstOrDefault(x => x.Email == email);
-            if (user != null)
+            if (user != null && Currentuser != user)
             {
                 return true;
             }

@@ -74,11 +74,13 @@ namespace BookStore.Controllers
         [Authorize]
         public IActionResult EditUserProfile(EditMailUsernameVM user)
         {
-            if (_userRepository.CheckBaseUsername(user.UserName) == true || _userRepository.CheckBaseEmail(user.Email) == true)
+            string userId = User.Claims.First(c => c.Type == "UserID").Value;
+            if (_userRepository.CheckBaseUsername(user.UserName, userId) == true || _userRepository.CheckBaseEmail(user.Email, userId) == true)
             {
+                
                 return Conflict();
             }
-            string userId = User.Claims.First(c => c.Type == "UserID").Value;
+            
             _userRepository.EditUserProfile(user, userId);
             return Ok();
         }
