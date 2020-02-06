@@ -30,13 +30,13 @@ namespace BookStore.Repository
             //}
         }
 
-        public List<CategoriesVM> GetCategories()
+        public List<CategoryVM> GetCategories()
         {
             List<Categories> items = _appDbContext.Categories.ToList();
-            List<CategoriesVM> categories = new List<CategoriesVM>();
+            List<CategoryVM> categories = new List<CategoryVM>();
             foreach(var c in items)
             {
-                CategoriesVM category = new CategoriesVM()
+                CategoryVM category = new CategoryVM()
                 {
                     CategoryId = c.CategoryId,
                     CategoryName = c.CategoryName
@@ -46,9 +46,9 @@ namespace BookStore.Repository
             return categories.ToList();
         }
 
-        public bool CheckBase(CategoriesVM categoriesVM)
+        public bool CheckBase(string name)
         {
-            var categorymodel = _appDbContext.Categories.Where(x => x.CategoryName == categoriesVM.CategoryName);
+            var categorymodel = _appDbContext.Categories.Where(x => x.CategoryName == name);
             if (categorymodel == null)
             {
                 return false;
@@ -59,25 +59,29 @@ namespace BookStore.Repository
             }
         }
 
-        public void PostCategory(CategoriesVM categoriesVM)
+        public void PostCategory(CreateCategoryVM categoriesVM)
         {
             Categories category = new Categories()
             {
-                CategoryId = categoriesVM.CategoryId,
                 CategoryName = categoriesVM.CategoryName
             };
             _appDbContext.Categories.Add(category);
             _appDbContext.SaveChanges();
         }
 
-        public void PutCategory(CategoriesVM categoriesVM)
+        public void PutCategory(CreateCategoryVM categoriesVM)
         {
             var category = _appDbContext.Categories.FirstOrDefault(x => x.CategoryName == categoriesVM.CategoryName);
             category.CategoryName = categoriesVM.CategoryName;
             _appDbContext.SaveChanges();
         }
 
-
+        public void DeleteCategory(int id)
+        {
+            var category = _appDbContext.Categories.FirstOrDefault(x => x.CategoryId == id);
+            _appDbContext.Categories.Remove(category);
+            _appDbContext.SaveChanges();
+        }
 
     }
 }

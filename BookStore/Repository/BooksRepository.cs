@@ -40,12 +40,15 @@ namespace BookStore.Repository
             return books.ToList();
         }
 
-        public BooksDetailsVM GetSingleBook(int id)
+        public BooksDetailsVM GetBook(int id)
         {
             var b = _appDbContext.Books.FirstOrDefault(x => x.BookId == id);
+            if(b == null)
+            {
+                return null;
+            }
             BooksDetailsVM bookVM = new BooksDetailsVM()
             {
-                BookId = b.BookId,
                 Title = b.Title,
                 Publisher = b.Publisher,
                 PublishedDate = b.PublishedDate,
@@ -66,11 +69,11 @@ namespace BookStore.Repository
             return bookVM;
         }
 
-        public void PostBook(BooksDetailsVM b)
+        public void PostBook(CreateBookVM b)
         {
+            var category = _appDbContext.Categories.FirstOrDefault(c => c.CategoryId == b.CategoryId);
             Books NewBook = new Books()
             {
-                BookId = b.BookId,
                 Title = b.Title,
                 Publisher = b.Publisher,
                 PublishedDate = b.PublishedDate,
@@ -82,19 +85,17 @@ namespace BookStore.Repository
                 CoverUri = b.CoverUri,
                 Price = b.Price,
                 Author = b.Author,
-                Category = b.category,
+                Category = category,
                 Sold = 0,
-                InStock = b.InStock,
-                IsDiscount = b.IsDiscount,
-                DiscountPrice = b.DiscountPrice
+                InStock = b.InStock
             };
             _appDbContext.Books.Add(NewBook);
             _appDbContext.SaveChanges();
         }
 
-        public void PutBook(EditBookVM m)
+        public void PutBook(EditBookVM m, int id)
         {
-            var b = _appDbContext.Books.FirstOrDefault(x => x.BookId == m.BookId);
+            var b = _appDbContext.Books.FirstOrDefault(x => x.BookId == id);
 
             b.Title = m.Title;
             b.Publisher = m.Publisher;

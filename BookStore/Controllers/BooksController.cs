@@ -28,24 +28,31 @@ namespace BookStore.Controllers
             return books;
         }
 
-        [HttpGet("BookDetails")]
-        public BooksDetailsVM GetSingleBook(int id)
+
+        [HttpGet("{id}")]
+        public async Task<object> GetSingleBook(int id)
         {
-            var book = _booksRepository.GetSingleBook(id);
+            var GetBook = Task.Run( () => _booksRepository.GetBook(id));
+            BooksDetailsVM book = await GetBook;
+            if (book == null)
+            {
+                return NotFound();
+            }
             return book;
         }
 
         [HttpPost("Books")]
-        public IActionResult PostBook([FromBody] BooksDetailsVM book)
+        public IActionResult PostBook([FromBody] CreateBookVM book)
         {
             _booksRepository.PostBook(book);
             return Ok();
         }
 
-        [HttpPut("Books")]
-        public IActionResult PutBook([FromBody] EditBookVM book)
+        [HttpPut("{id}")]
+        public IActionResult PutBook([FromBody] EditBookVM book, int id)
         {
-            _booksRepository.PutBook(book);
+            
+            _booksRepository.PutBook(book, id);
             return Ok();
         }
     }

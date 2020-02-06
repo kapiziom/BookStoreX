@@ -42,9 +42,9 @@ namespace BookStore.Repository
             return address;
         }
 
-        public void EditUserAddress(AddressVM address)
+        public void EditUserAddress(EditAddressVM address, string userId)
         {
-            var user = _appDbContext.Users.FirstOrDefault(u => u.Id == address.UserID);
+            var user = _appDbContext.Users.FirstOrDefault(u => u.Id == userId);
             user.LastEdit = DateTime.Now;
             user.FirstName = address.FirstName;
             user.LastName = address.LastName;
@@ -57,9 +57,9 @@ namespace BookStore.Repository
             _appDbContext.SaveChanges();
         }
 
-        public void EditUserProfile(UserVM userVM)
+        public void EditUserProfile(EditMailUsernameVM userVM, string userId)
         {
-            var user = _appDbContext.Users.FirstOrDefault(u => u.Id == userVM.UserID);
+            var user = _appDbContext.Users.FirstOrDefault(u => u.Id == userId);
             user.UserName = userVM.UserName;
             user.Email = userVM.Email;
             _appDbContext.SaveChanges();

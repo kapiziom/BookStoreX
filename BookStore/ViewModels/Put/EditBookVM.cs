@@ -8,7 +8,6 @@ namespace BookStore.ViewModels
 {
     public class EditBookVM
     {
-        public int BookId { get; set; }
         public string Title { get; set; }
         public string Publisher { get; set; }
         public DateTime PublishedDate { get; set; }

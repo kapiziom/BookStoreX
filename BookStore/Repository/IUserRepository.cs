@@ -9,8 +9,8 @@ namespace BookStore.Repository
     public interface IUserRepository
     {
         AddressVM GetUserAddress(string userId);
-        void EditUserAddress(AddressVM address);
-        void EditUserProfile(UserVM user);
+        void EditUserAddress(EditAddressVM address, string userId);
+        void EditUserProfile(EditMailUsernameVM user, string userId);
         bool CheckBaseUsernameEmail();//return true if element is in baze
     }
 }

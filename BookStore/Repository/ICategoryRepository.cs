@@ -9,9 +9,10 @@ namespace BookStore.Repository
 {
     public interface ICategoryRepository
     {
-        List<CategoriesVM> GetCategories();
-        void PostCategory(CategoriesVM categoriesVM);
-        void PutCategory(CategoriesVM categoriesVM);
-        public bool CheckBase(CategoriesVM categoriesVM);
+        List<CategoryVM> GetCategories();
+        void PostCategory(CreateCategoryVM categoriesVM);
+        void PutCategory(CreateCategoryVM categoriesVM);
+        public bool CheckBase(string name);
+        void DeleteCategory(int id);
     }
 }

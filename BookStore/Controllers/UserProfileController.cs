@@ -63,17 +63,19 @@ namespace BookStore.Controllers
 
         [HttpPut("Address")]
         [Authorize]
-        public IActionResult EditAddress(AddressVM address)
+        public IActionResult EditAddress(EditAddressVM address)
         {
-            _userRepository.EditUserAddress(address);
+            string userId = User.Claims.First(c => c.Type == "UserID").Value;
+            _userRepository.EditUserAddress(address, userId);
             return Ok();
         }
 
         [HttpPut("UserProfile")]
         [Authorize]
-        public IActionResult EditUserProfile(AddressVM address)
+        public IActionResult EditUserProfile(EditMailUsernameVM user)
         {
-            _userRepository.EditUserAddress(address);
+            string userId = User.Claims.First(c => c.Type == "UserID").Value;
+            _userRepository.EditUserProfile(user, userId);
             return Ok();
         }
 
@@ -98,6 +100,7 @@ namespace BookStore.Controllers
         [Authorize]
         public IActionResult ShoppingHistory()
         {
+            string userId = User.Claims.First(c => c.Type == "UserID").Value;
             return NotFound();
         }
     }
