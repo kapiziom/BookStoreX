@@ -13,5 +13,6 @@ namespace BookStore.Repository
         void PostBook(CreateBookVM book);
         void PutBook(EditBookVM bookVM, int id);
         decimal GetBookPrice(int bookId);
+        string GetBookTitleById(int id);
     }
 }

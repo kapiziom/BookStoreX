@@ -147,5 +147,37 @@ namespace BookStore.Repository
                 return false;
             }
         }
+
+        public OrderWithDetailsVM GetOrderDetail(int id)
+        {
+            var o = _appDbContext.Orders.FirstOrDefault(m => m.OrderId == id);
+            var orderDetails = _appDbContext.OrderDetails.Where(m => m.OrderID == id);
+            List<OrderDetailsVM> details = new List<OrderDetailsVM>();
+            foreach(var m in orderDetails)
+            {
+                OrderDetailsVM o_details = new OrderDetailsVM()
+                {
+                    BootTitle = _booksRepository.GetBookTitleById(m.BookID),
+                    NumberOfBooks = m.NumberOfBooks,
+                    Price = m.Price
+                };
+                details.Add(o_details);
+            }
+            OrderWithDetailsVM orderVM = new OrderWithDetailsVM()
+            {
+                UserId = o.UserId,
+                Username = o.Username,
+                Email = o.Email,
+                Phone = o.Phone,
+                FullName = o.FirstName + " " + o.LastName,
+                Country = o.Country,
+                PostalCodeNCity = o.PostalCode + " " + o.City,
+                StreetWithNumber = o.Street + " " + o.Number,
+                TotalPrice = o.Total,
+                OrderDate = o.OrderDate,
+                IsShipped = o.IsShipped
+            };
+            return orderVM;
+        }
     }
 }

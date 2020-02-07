@@ -5,7 +5,10 @@ using System.Threading.Tasks;
 
 namespace BookStore.ViewModels
 {
-    public class OrderDetailVM
+    public class HttpResult
     {
+        public bool succeeded { get; set; }
+        public List<Errors> errors { get; set; }
+        
     }
 }
