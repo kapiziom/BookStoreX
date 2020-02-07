@@ -37,9 +37,8 @@ namespace BookStore.Repository
 
         public List<CartVM> GetUsersCart(string userId)
         {
-            IEnumerable<CartElement> cart;
-            cart = _appDbContext.CartElements.Where(c => c.UserId == userId);
-            if(cart == null)
+            var cart = _appDbContext.CartElements.Where(c => c.UserId == userId);
+            if(cart == null || cart.Count() < 1)
             {
                 return null;
             }

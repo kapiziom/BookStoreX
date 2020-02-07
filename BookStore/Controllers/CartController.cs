@@ -58,8 +58,17 @@ namespace BookStore.Controllers
         public IActionResult PlaceOrder()
         {
             string userId = User.Claims.First(c => c.Type == "UserID").Value;
+            var cart = _cartRepository.GetUsersCart(userId);
+            if(cart == null || cart.Count() < 1)
+            {
+                var error = new { succeeded = false };
+                return BadRequest(error);
+            }
+
             _cartRepository.PlaceOrder(userId);
-            return Ok();
+            
+            var message = new { succeeded = true };
+            return Ok(message);
         }
 
         [HttpDelete("ClearCart")]
@@ -70,9 +79,11 @@ namespace BookStore.Controllers
             var result = _cartRepository.DeleteCart(userId);
             if(result == false)
             {
-                return BadRequest();
+                var error = new { successed = false };
+                return BadRequest(error);
             }
-            return Ok();
+            var message = new { successed = true };
+            return Ok(message);
         }
 
         [HttpGet("ShoppingHistory")]
