@@ -47,7 +47,7 @@ namespace BookStore.Controllers
             List<CartVM> cart = _cartRepository.GetUsersCart(userId);
             if (cart == null)
             {
-                return NotFound();
+                return NoContent();
             }
             return Ok(cart);
         }
@@ -81,7 +81,7 @@ namespace BookStore.Controllers
             string userId = User.Claims.First(c => c.Type == "UserID").Value;
             if(_cartRepository.CheckUserOrders(userId) == false)
             {
-                return NotFound();
+                return NoContent();
             }
             var history = _cartRepository.History(userId);
             return Ok(history);

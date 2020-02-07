@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using BookStore.Models;
 using BookStore.Repository;
+using BookStore.Service;
 using BookStore.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -18,11 +21,13 @@ namespace BookStore.Controllers
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly IUserRepository _userRepository;
+        private readonly IResultInfo _resultInfo;
 
-        public UserProfileController(UserManager<AppUser> userManager, IUserRepository userRepository)
+        public UserProfileController(UserManager<AppUser> userManager, IUserRepository userRepository, IResultInfo resultInfo)
         {
             _userManager = userManager;
             _userRepository = userRepository;
+            _resultInfo = resultInfo;
         }
 
         [HttpGet("UserProfile")]
@@ -67,22 +72,25 @@ namespace BookStore.Controllers
         {
             string userId = User.Claims.First(c => c.Type == "UserID").Value;
             _userRepository.EditUserAddress(address, userId);
-            return Ok();
+            var info = new { succeeded = true };
+            return Ok(info);
         }
 
         [HttpPut("UserProfile")]
         [Authorize]
         public IActionResult EditUserProfile(EditMailUsernameVM user)
         {
+            HttpResult result = null;
             string userId = User.Claims.First(c => c.Type == "UserID").Value;
             if (_userRepository.CheckBaseUsername(user.UserName, userId) == true || _userRepository.CheckBaseEmail(user.Email, userId) == true)
             {
-                
-                return Conflict();
+                var error = new { succeeded = false };
+                return Conflict(error);
             }
-            
+
             _userRepository.EditUserProfile(user, userId);
-            return Ok();
+            result = _resultInfo.SetResult(true, null);
+            return Ok(result);
         }
 
         [HttpPut("ChangePassword")]
