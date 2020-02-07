@@ -129,5 +129,11 @@ namespace BookStore.Repository
                 return b.DiscountPrice.Value;
             }
         }
+
+        public string GetBookTitleById(int id)
+        {
+            var b = _appDbContext.Books.FirstOrDefault(x => x.BookId == id);
+            return b.Title;
+        }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using BookStore.Repository;
 using BookStore.ViewModels;
@@ -87,5 +88,19 @@ namespace BookStore.Controllers
             return Ok(history);
         }
 
+        [HttpGet("OrderDetails/{id}")]
+        [Authorize]
+        public IActionResult OrderDetails(int id)
+        {
+            string userId = User.Claims.First(c => c.Type == "UserID").Value;
+            var orderDetails = _cartRepository.GetOrderDetail(id);
+
+            if (orderDetails.UserId != userId)
+            {
+                return Forbid();
+            }
+            var history = _cartRepository.History(userId);
+            return Ok(history);
+        }
     }
 }
