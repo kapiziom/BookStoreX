@@ -16,6 +16,63 @@ namespace BookStore.Repository
         {
             _appDbContext = appDbContext;
         }
+
+        public BooksListVM GetAllBooks(int page, string category, string search)
+        {
+            int defaultPageCount = 2;
+            var bookList = new BooksListVM { PageCount = 1 };
+            var booksVM = new List<BooksWithoutDetailsVM>();
+            List<Books> books;
+            //by category
+            if (category == "all" || string.IsNullOrEmpty(category))
+            {
+                books = _appDbContext.Books.ToList();
+            }
+            else
+            {
+                books = _appDbContext.Books.Where(m => m.CategoryName == category).ToList();
+            }
+            //search
+            if(books.Any() && !string.IsNullOrEmpty(search))
+            {
+                books = _appDbContext.Books.Where(m => m.Title.Contains(search)).ToList();
+            }
+            //available pages
+            if (books.Any())
+            {
+                bookList.PageCount = (int)Math.Ceiling(((double)books.Count() / defaultPageCount));
+            }
+            books = books.Skip((page - 1) * defaultPageCount).Take(defaultPageCount).ToList();
+            //create model
+            foreach(var b in books)
+            {
+                var book = new BooksWithoutDetailsVM
+                {
+                    BookId = b.BookId,
+                    Title = b.Title,
+                    Available = true,
+                    CoverUri = b.CoverUri,
+                    Author = b.Author,
+                    Price = b.Price
+                };
+                if(b.InStock < 1)
+                {
+                    book.Available = false;
+                }
+                if(b.IsDiscount == true)
+                {
+                    book.Price = b.DiscountPrice.Value;
+                }
+                if(b.CoverUri == null)
+                {
+                    book.CoverUri = "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/1024px-No_image_available.svg.png";
+                }
+                booksVM.Add(book);
+            }
+            bookList.BooksList = booksVM;
+            return bookList;
+        }
+
         public List<BooksWithoutDetailsVM> GetBooksList()
         {
             List<Books> items = _appDbContext.Books.ToList();
@@ -26,14 +83,9 @@ namespace BookStore.Repository
                 {
                     BookId = b.BookId,
                     Title = b.Title,
-                    PublishedDate = b.PublishedDate,
-                    InStock = b.InStock,
                     CoverUri = b.CoverUri,
                     Price = b.Price,
-                    Author = b.Author,
-                    IsDiscount = b.IsDiscount,
-                    DiscountPrice = b.DiscountPrice,
-                    Category = b.CategoryName
+                    Author = b.Author
                 };
                 books.Add(book);
             }

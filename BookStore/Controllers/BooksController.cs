@@ -7,6 +7,7 @@ using BookStore.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using X.PagedList;
 
 namespace BookStore.Controllers
 {
@@ -23,9 +24,9 @@ namespace BookStore.Controllers
         }
 
         [HttpGet("Books")]
-        public List<BooksWithoutDetailsVM> GetBooksList()
+        public BooksListVM GetAllBooks(int page, string category, string search)
         {
-            var books = _booksRepository.GetBooksList();
+            var books = _booksRepository.GetAllBooks(page, category, search);
             return books;
         }
 
