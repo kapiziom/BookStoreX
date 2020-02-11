@@ -17,8 +17,7 @@ namespace BookStore.Repository
         void PutBook(EditBookVM bookVM, int id);
         decimal GetBookPrice(int bookId);
         string GetBookTitleById(int id);
-        List<BooksWithoutDetailsVM> GetTop5Discount();
-        List<BooksWithoutDetailsVM> GetTop5New();
-        List<BooksWithoutDetailsVM> GetTop5BestSellers();
+        List<BooksWithoutDetailsVM> GetTop6New();
+        List<BooksWithoutDetailsVM> GetTop6BestSellers();
     }
 }

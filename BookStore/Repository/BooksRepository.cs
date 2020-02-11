@@ -225,42 +225,10 @@ namespace BookStore.Repository
             var b = _appDbContext.Books.FirstOrDefault(x => x.BookId == id);
             return b.Title;
         }
-
-        public List<BooksWithoutDetailsVM> GetTop5Discount()
+        
+        public List<BooksWithoutDetailsVM> GetTop6New()
         {
-            var books = _appDbContext.Books.Where(m => m.IsDiscount == true).OrderByDescending(m => m.AddedToStore).Take(5).ToList();
-            var booksVM = new List<BooksWithoutDetailsVM>();
-            foreach(var b in books)
-            {
-                var book = new BooksWithoutDetailsVM()
-                {
-                    BookId = b.BookId,
-                    Title = b.Title,
-                    Available = true,
-                    CoverUri = b.CoverUri,
-                    Author = b.Author,
-                    Price = b.Price
-                };
-                if (b.InStock < 1)
-                {
-                    book.Available = false;
-                }
-                if (b.IsDiscount == true)
-                {
-                    book.Price = b.DiscountPrice.Value;
-                }
-                if (b.CoverUri == null)
-                {
-                    book.CoverUri = "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/1024px-No_image_available.svg.png";
-                }
-                booksVM.Add(book);
-            }
-            return booksVM;
-
-        }
-        public List<BooksWithoutDetailsVM> GetTop5New()
-        {
-            var books = _appDbContext.Books.OrderByDescending(m => m.AddedToStore).Take(5).ToList();
+            var books = _appDbContext.Books.OrderByDescending(m => m.AddedToStore).Take(6).ToList();
             var booksVM = new List<BooksWithoutDetailsVM>();
             foreach (var b in books)
             {
@@ -289,9 +257,9 @@ namespace BookStore.Repository
             }
             return booksVM;
         }
-        public List<BooksWithoutDetailsVM> GetTop5BestSellers()
+        public List<BooksWithoutDetailsVM> GetTop6BestSellers()
         {
-            var books = _appDbContext.Books.OrderByDescending(m => m.Sold).Take(5).ToList();
+            var books = _appDbContext.Books.OrderByDescending(m => m.Sold).Take(6).ToList();
             var booksVM = new List<BooksWithoutDetailsVM>();
             foreach (var b in books)
             {

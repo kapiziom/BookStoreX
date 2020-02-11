@@ -46,21 +46,14 @@ namespace BookStore.Controllers
         [HttpGet("NewBooksTOP5")]
         public IActionResult NewBooks()
         {
-            var books = _booksRepository.GetTop5New();
+            var books = _booksRepository.GetTop6New();
             return Ok(books);
         }
-
-        [HttpGet("DiscountTOP5")]
-        public IActionResult DiscountBooks()
-        {
-            var books = _booksRepository.GetTop5Discount();
-            return Ok(books);
-        }
-
+        
         [HttpGet("BestSellersTOP5")]
         public IActionResult BestSeller()
         {
-            var books = _booksRepository.GetTop5BestSellers();
+            var books = _booksRepository.GetTop6BestSellers();
             return Ok(books);
         }
 
