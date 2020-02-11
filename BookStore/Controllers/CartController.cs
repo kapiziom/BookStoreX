@@ -17,8 +17,10 @@ namespace BookStore.Controllers
     {
         private readonly ICartOrderRepository _cartRepository;
         private readonly IBooksRepository _bookRepository;
-        public CartController(ICartOrderRepository cartRepository, IBooksRepository booksRepository)
+        private readonly IUserRepository _userRepository;
+        public CartController(ICartOrderRepository cartRepository, IBooksRepository booksRepository, IUserRepository userRepository)
         {
+            _userRepository = userRepository;
             _cartRepository = cartRepository;
             _bookRepository = booksRepository;
         }
@@ -29,14 +31,16 @@ namespace BookStore.Controllers
         {
             string userId = User.Claims.First(c => c.Type == "UserID").Value;
             var book =_bookRepository.GetBook(addcart.BookID);
-            if(book.InStock < addcart.NumberOfBooks || book == null)
+            if(book.InStock < addcart.NumberOfBooks || book == null || addcart.NumberOfBooks <= 0)
             {
-                return Conflict();
+                var message = new { succeeded = false };
+                return Conflict(message);
             }
             else
             {
                 _cartRepository.AddToCart(addcart, userId);
-                return Ok();
+                var message = new { succeeded = true };
+                return Ok(message);
             }
         }
 
@@ -58,6 +62,11 @@ namespace BookStore.Controllers
         public IActionResult PlaceOrder()
         {
             string userId = User.Claims.First(c => c.Type == "UserID").Value;
+            if (_userRepository.CheckAddressExist(userId) == false)
+            {
+                return BadRequest();
+            }
+            var CheckAddress = _userRepository.CheckAddressExist(userId);
             var cart = _cartRepository.GetUsersCart(userId);
             if(cart == null || cart.Count() < 1)
             {

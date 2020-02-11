@@ -23,11 +23,45 @@ namespace BookStore.Controllers
             _categoryRepository = categoryRepository;
         }
 
-        [HttpGet("Books")]
-        public BooksListVM GetAllBooks(int page, string category, string search)
+        [HttpGet("AllBooks")]
+        public IActionResult AllBooks()
         {
-            var books = _booksRepository.GetAllBooks(page, category, search);
-            return books;
+            var books = _booksRepository.GetBooksList();
+            return Ok(books);
+        }
+
+        [HttpGet("Page/{category}/{page}")]
+        public IActionResult GetPaged(int page, string category)
+        {
+            var books = _booksRepository.GetBooksByCategory(page, category);
+            return Ok(books);
+        }
+
+        [HttpGet("Page/{page}")]
+        public IActionResult GetPagedBooks(int page)
+        {
+            var books = _booksRepository.GetBooksPage(page);
+            return Ok(books);
+        }
+        [HttpGet("NewBooksTOP5")]
+        public IActionResult NewBooks()
+        {
+            var books = _booksRepository.GetTop5New();
+            return Ok(books);
+        }
+
+        [HttpGet("DiscountTOP5")]
+        public IActionResult DiscountBooks()
+        {
+            var books = _booksRepository.GetTop5Discount();
+            return Ok(books);
+        }
+
+        [HttpGet("BestSellersTOP5")]
+        public IActionResult BestSeller()
+        {
+            var books = _booksRepository.GetTop5BestSellers();
+            return Ok(books);
         }
 
 

@@ -13,5 +13,6 @@ namespace BookStore.Repository
         void EditUserProfile(EditMailUsernameVM user, string userId);
         bool CheckBaseUsername(string username, string userid);//return true if element is in baze
         bool CheckBaseEmail(string email, string userid);
+        bool CheckAddressExist(string userId);
     }
 }

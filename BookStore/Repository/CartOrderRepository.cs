@@ -73,6 +73,8 @@ namespace BookStore.Repository
                     NumberOfBooks = m.NumberOfBooks,
                     Price = m.NumberOfBooks * (_booksRepository.GetBookPrice(m.BookID))
                 };
+                var book = _appDbContext.Books.FirstOrDefault(x => x.BookId == m.BookID);
+                book.Sold = book.Sold + m.NumberOfBooks;
                 _appDbContext.OrderDetails.Add(detail);
                 _appDbContext.CartElements.Remove(m);
                 totalprice = totalprice + detail.Price;

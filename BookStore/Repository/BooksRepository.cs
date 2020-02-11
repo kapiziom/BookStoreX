@@ -17,31 +17,16 @@ namespace BookStore.Repository
             _appDbContext = appDbContext;
         }
 
-        public BooksListVM GetAllBooks(int page, string category, string search)
+        public BooksListVM GetBooksPage(int page)
         {
-            int defaultPageCount = 2;
+            int defaultPageCount = 6;
             var bookList = new BooksListVM { PageCount = 1 };
             var booksVM = new List<BooksWithoutDetailsVM>();
-            List<Books> books;
-            //by category
-            if (category == "all" || string.IsNullOrEmpty(category))
-            {
-                books = _appDbContext.Books.ToList();
-            }
-            else
-            {
-                books = _appDbContext.Books.Where(m => m.CategoryName == category).ToList();
-            }
-            //search
-            if(books.Any() && !string.IsNullOrEmpty(search))
-            {
-                books = _appDbContext.Books.Where(m => m.Title.Contains(search)).ToList();
-            }
+            List<Books> books = _appDbContext.Books.ToList();
+           
             //available pages
-            if (books.Any())
-            {
-                bookList.PageCount = (int)Math.Ceiling(((double)books.Count() / defaultPageCount));
-            }
+            bookList.PageCount = (int)Math.Ceiling(((double)books.Count() / defaultPageCount));
+
             books = books.Skip((page - 1) * defaultPageCount).Take(defaultPageCount).ToList();
             //create model
             foreach(var b in books)
@@ -64,6 +49,57 @@ namespace BookStore.Repository
                     book.Price = b.DiscountPrice.Value;
                 }
                 if(b.CoverUri == null)
+                {
+                    book.CoverUri = "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/1024px-No_image_available.svg.png";
+                }
+                booksVM.Add(book);
+            }
+            bookList.BooksList = booksVM;
+            return bookList;
+        }
+
+        public BooksListVM GetBooksByCategory(int page, string category)
+        {
+            int defaultPageCount = 6;
+            var bookList = new BooksListVM { PageCount = 1 };
+            var booksVM = new List<BooksWithoutDetailsVM>();
+            List<Books> books;
+
+            //By category
+            if (category == "all" || string.IsNullOrEmpty(category))
+            {
+                books = _appDbContext.Books.ToList();
+            }
+            else
+            {
+                books = _appDbContext.Books.Where(m => m.CategoryName == category).ToList();
+            }
+
+            //available pages
+            bookList.PageCount = (int)Math.Ceiling(((double)books.Count() / defaultPageCount));
+
+            books = books.Skip((page - 1) * defaultPageCount).Take(defaultPageCount).ToList();
+            //create model
+            foreach (var b in books)
+            {
+                var book = new BooksWithoutDetailsVM
+                {
+                    BookId = b.BookId,
+                    Title = b.Title,
+                    Available = true,
+                    CoverUri = b.CoverUri,
+                    Author = b.Author,
+                    Price = b.Price
+                };
+                if (b.InStock < 1)
+                {
+                    book.Available = false;
+                }
+                if (b.IsDiscount == true)
+                {
+                    book.Price = b.DiscountPrice.Value;
+                }
+                if (b.CoverUri == null)
                 {
                     book.CoverUri = "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/1024px-No_image_available.svg.png";
                 }
@@ -101,6 +137,7 @@ namespace BookStore.Repository
             }
             BooksDetailsVM bookVM = new BooksDetailsVM()
             {
+                BookId = b.BookId,
                 Title = b.Title,
                 Publisher = b.Publisher,
                 PublishedDate = b.PublishedDate,
@@ -138,6 +175,7 @@ namespace BookStore.Repository
                 Price = b.Price,
                 Author = b.Author,
                 Category = category,
+                CategoryID = category.CategoryId,
                 CategoryName = category.CategoryName,
                 Sold = 0,
                 InStock = b.InStock
@@ -186,6 +224,101 @@ namespace BookStore.Repository
         {
             var b = _appDbContext.Books.FirstOrDefault(x => x.BookId == id);
             return b.Title;
+        }
+
+        public List<BooksWithoutDetailsVM> GetTop5Discount()
+        {
+            var books = _appDbContext.Books.OrderByDescending(m => m.IsDiscount).Take(5).ToList();
+            var booksVM = new List<BooksWithoutDetailsVM>();
+            foreach(var b in books)
+            {
+                var book = new BooksWithoutDetailsVM()
+                {
+                    BookId = b.BookId,
+                    Title = b.Title,
+                    Available = true,
+                    CoverUri = b.CoverUri,
+                    Author = b.Author,
+                    Price = b.Price
+                };
+                if (b.InStock < 1)
+                {
+                    book.Available = false;
+                }
+                if (b.IsDiscount == true)
+                {
+                    book.Price = b.DiscountPrice.Value;
+                }
+                if (b.CoverUri == null)
+                {
+                    book.CoverUri = "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/1024px-No_image_available.svg.png";
+                }
+                booksVM.Add(book);
+            }
+            return booksVM;
+
+        }
+        public List<BooksWithoutDetailsVM> GetTop5New()
+        {
+            var books = _appDbContext.Books.OrderByDescending(m => m.PublishedDate).Take(5).ToList();
+            var booksVM = new List<BooksWithoutDetailsVM>();
+            foreach (var b in books)
+            {
+                var book = new BooksWithoutDetailsVM()
+                {
+                    BookId = b.BookId,
+                    Title = b.Title,
+                    Available = true,
+                    CoverUri = b.CoverUri,
+                    Author = b.Author,
+                    Price = b.Price
+                };
+                if (b.InStock < 1)
+                {
+                    book.Available = false;
+                }
+                if (b.IsDiscount == true)
+                {
+                    book.Price = b.DiscountPrice.Value;
+                }
+                if (b.CoverUri == null)
+                {
+                    book.CoverUri = "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/1024px-No_image_available.svg.png";
+                }
+                booksVM.Add(book);
+            }
+            return booksVM;
+        }
+        public List<BooksWithoutDetailsVM> GetTop5BestSellers()
+        {
+            var books = _appDbContext.Books.OrderByDescending(m => m.Sold).Take(5).ToList();
+            var booksVM = new List<BooksWithoutDetailsVM>();
+            foreach (var b in books)
+            {
+                var book = new BooksWithoutDetailsVM()
+                {
+                    BookId = b.BookId,
+                    Title = b.Title,
+                    Available = true,
+                    CoverUri = b.CoverUri,
+                    Author = b.Author,
+                    Price = b.Price
+                };
+                if (b.InStock < 1)
+                {
+                    book.Available = false;
+                }
+                if (b.IsDiscount == true)
+                {
+                    book.Price = b.DiscountPrice.Value;
+                }
+                if (b.CoverUri == null)
+                {
+                    book.CoverUri = "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/1024px-No_image_available.svg.png";
+                }
+                booksVM.Add(book);
+            }
+            return booksVM;
         }
     }
 }

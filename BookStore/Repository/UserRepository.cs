@@ -125,5 +125,15 @@ namespace BookStore.Repository
             }
         }
 
+        public bool CheckAddressExist(string userId)
+        {
+            var u = _appDbContext.Users.FirstOrDefault(u => u.Id == userId);
+            if (u.City == null || u.FirstName == null || u.LastName == null || u.PostalCode == null || u.Street == null || u.Number == null)
+            {
+                return false;
+            }
+            else return true;
+        }
+
     }
 }
