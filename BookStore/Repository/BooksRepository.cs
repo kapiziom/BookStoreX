@@ -228,7 +228,7 @@ namespace BookStore.Repository
 
         public List<BooksWithoutDetailsVM> GetTop5Discount()
         {
-            var books = _appDbContext.Books.OrderByDescending(m => m.IsDiscount).Take(5).ToList();
+            var books = _appDbContext.Books.Where(m => m.IsDiscount == true).OrderByDescending(m => m.AddedToStore).Take(5).ToList();
             var booksVM = new List<BooksWithoutDetailsVM>();
             foreach(var b in books)
             {
@@ -260,7 +260,7 @@ namespace BookStore.Repository
         }
         public List<BooksWithoutDetailsVM> GetTop5New()
         {
-            var books = _appDbContext.Books.OrderByDescending(m => m.PublishedDate).Take(5).ToList();
+            var books = _appDbContext.Books.OrderByDescending(m => m.AddedToStore).Take(5).ToList();
             var booksVM = new List<BooksWithoutDetailsVM>();
             foreach (var b in books)
             {
