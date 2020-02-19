@@ -127,12 +127,23 @@ namespace BookStore.Repository
 
         public bool CheckAddressExist(string userId)
         {
-            var u = _appDbContext.Users.FirstOrDefault(u => u.Id == userId);
-            if (u.City == null || u.FirstName == null || u.LastName == null || u.PostalCode == null || u.Street == null || u.Number == null)
+            var u = _appDbContext.Users.FirstOrDefault(m => m.Id == userId);
+            if (u.City == null || u.FirstName == null || u.LastName == null || u.PostalCode == null || u.Street == null || u.Number == null ||
+                u.City == "" || u.FirstName == "" || u.LastName == "" || u.PostalCode == "" || u.Street == "" || u.Number == "")
             {
                 return false;
             }
             else return true;
+        }
+
+        public string GetRole(string userId)
+        {
+            string rolename = null;
+            var user = _appDbContext.Users.FirstOrDefault(m => m.Id == userId);
+            var userrole = _appDbContext.UserRoles.FirstOrDefault(m => m.UserId == user.Id);
+            var role = _appDbContext.Roles.FirstOrDefault(m => m.Id == userrole.RoleId);
+            rolename = role.Name;
+            return rolename;
         }
 
     }

@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using BookStore.Models;
 using BookStore.Repository;
 using BookStore.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookStore.Controllers
@@ -113,14 +115,15 @@ namespace BookStore.Controllers
         public IActionResult OrderDetails(int id)
         {
             string userId = User.Claims.First(c => c.Type == "UserID").Value;
-            var orderDetails = _cartRepository.GetOrderDetail(id);
+            var orderDetails = _cartRepository.GetOrderDetails(id);
+            var role = _userRepository.GetRole(userId);
 
-            if (orderDetails.UserId != userId)
+            if (orderDetails.UserId == userId || role != "NormalUser")
             {
-                return Forbid();
+                return Ok(orderDetails);
+                
             }
-            var history = _cartRepository.History(userId);
-            return Ok(history);
+            return Forbid();
         }
     }
 }

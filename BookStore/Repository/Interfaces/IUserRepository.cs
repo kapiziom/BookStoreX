@@ -14,5 +14,6 @@ namespace BookStore.Repository
         bool CheckBaseUsername(string username, string userid);//return true if element is in baze
         bool CheckBaseEmail(string email, string userid);
         bool CheckAddressExist(string userId);
+        string GetRole(string userId);
     }
 }

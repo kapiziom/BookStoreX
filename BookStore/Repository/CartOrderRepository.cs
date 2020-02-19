@@ -149,7 +149,7 @@ namespace BookStore.Repository
             }
         }
 
-        public OrderWithDetailsVM GetOrderDetail(int id)
+        public OrderWithDetailsVM GetOrderDetails(int id)
         {
             var o = _appDbContext.Orders.FirstOrDefault(m => m.OrderId == id);
             var orderDetails = _appDbContext.OrderDetails.Where(m => m.OrderID == id);
