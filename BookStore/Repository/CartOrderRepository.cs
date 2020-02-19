@@ -22,15 +22,23 @@ namespace BookStore.Repository
         public void AddToCart(AddCartElementVM addcart, string userId)
         {
             var book = _appDbContext.Books.FirstOrDefault(b => b.BookId == addcart.BookID);
-            CartElement cartElement = new CartElement()
+            var cartCheck = _appDbContext.CartElements.FirstOrDefault(m => m.BookID == book.BookId && m.UserId == userId);
+            if (cartCheck != null)//if user add same book
             {
-                UserId = userId,
-                BookID = addcart.BookID,
-                NumberOfBooks = addcart.NumberOfBooks,
-                CreatedDate = DateTime.Now
-            };
-            book.InStock = book.InStock - addcart.NumberOfBooks;
-            _appDbContext.CartElements.Add(cartElement);
+                cartCheck.NumberOfBooks = cartCheck.NumberOfBooks + addcart.NumberOfBooks;
+            }
+            else
+            {
+                CartElement cartElement = new CartElement()
+                {
+                    UserId = userId,
+                    BookID = addcart.BookID,
+                    NumberOfBooks = addcart.NumberOfBooks,
+                    CreatedDate = DateTime.Now
+                };
+                _appDbContext.CartElements.Add(cartElement);
+            }
+            book.InStock = book.InStock - addcart.NumberOfBooks;        
             _appDbContext.SaveChanges();
         }
 

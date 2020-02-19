@@ -90,8 +90,7 @@ namespace BookStore.Controllers
             var result = _cartRepository.DeleteCart(userId);
             if(result == false)
             {
-                var error = new { successed = false };
-                return BadRequest(error);
+                return BadRequest();
             }
             var message = new { successed = true };
             return Ok(message);
