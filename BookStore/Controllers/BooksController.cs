@@ -30,13 +30,6 @@ namespace BookStore.Controllers
             return Ok(books);
         }
 
-        [HttpGet("BooksInCategory/{category}")]
-        public IActionResult BooksInCategory(string category)
-        {
-            var books = _booksRepository.BooksInCategory(category);
-            return Ok(books);
-        }
-
         [HttpGet("Page/{category}/{page}")]
         public IActionResult GetPaged(int page, string category)
         {
@@ -54,14 +47,16 @@ namespace BookStore.Controllers
         public IActionResult NewBooks()
         {
             var books = _booksRepository.GetTop6New();
-            return Ok(books);
+            var booksVM = new BooksListVM() { PageCount = 1, BooksList = books };
+            return Ok(booksVM);
         }
         
         [HttpGet("BestSellersTOP6")]
         public IActionResult BestSeller()
         {
             var books = _booksRepository.GetTop6BestSellers();
-            return Ok(books);
+            var booksVM = new BooksListVM() { PageCount = 1, BooksList = books };
+            return Ok(booksVM);
         }
 
         [HttpGet("{id}")]
