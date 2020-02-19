@@ -10,6 +10,7 @@ namespace BookStore.Repository
     {
         
         List<BooksWithoutDetailsVM> GetBooksList();
+        List<BooksWithoutDetailsVM> BooksInCategory(string category);
         BooksListVM GetBooksPage(int page);
         BooksListVM GetBooksByCategory(int page, string category);
         BooksDetailsVM GetBook(int id);

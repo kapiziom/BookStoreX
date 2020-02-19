@@ -109,6 +109,25 @@ namespace BookStore.Repository
             return bookList;
         }
 
+        public List<BooksWithoutDetailsVM> BooksInCategory(string category)
+        {
+            List<Books> items = _appDbContext.Books.Where(m => m.CategoryName == category).ToList();
+            List<BooksWithoutDetailsVM> books = new List<BooksWithoutDetailsVM>();
+            foreach (var b in items)
+            {
+                BooksWithoutDetailsVM book = new BooksWithoutDetailsVM()
+                {
+                    BookId = b.BookId,
+                    Title = b.Title,
+                    CoverUri = b.CoverUri,
+                    Price = b.Price,
+                    Author = b.Author
+                };
+                books.Add(book);
+            }
+            return books.ToList();
+        }
+
         public List<BooksWithoutDetailsVM> GetBooksList()
         {
             List<Books> items = _appDbContext.Books.ToList();

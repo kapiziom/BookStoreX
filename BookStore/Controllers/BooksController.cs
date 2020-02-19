@@ -30,6 +30,13 @@ namespace BookStore.Controllers
             return Ok(books);
         }
 
+        [HttpGet("BooksInCategory/{category}")]
+        public IActionResult BooksInCategory(string category)
+        {
+            var books = _booksRepository.BooksInCategory(category);
+            return Ok(books);
+        }
+
         [HttpGet("Page/{category}/{page}")]
         public IActionResult GetPaged(int page, string category)
         {
@@ -43,20 +50,19 @@ namespace BookStore.Controllers
             var books = _booksRepository.GetBooksPage(page);
             return Ok(books);
         }
-        [HttpGet("NewBooksTOP5")]
+        [HttpGet("NewBooksTOP6")]
         public IActionResult NewBooks()
         {
             var books = _booksRepository.GetTop6New();
             return Ok(books);
         }
         
-        [HttpGet("BestSellersTOP5")]
+        [HttpGet("BestSellersTOP6")]
         public IActionResult BestSeller()
         {
             var books = _booksRepository.GetTop6BestSellers();
             return Ok(books);
         }
-
 
         [HttpGet("{id}")]
         public async Task<object> GetSingleBook(int id)
@@ -74,6 +80,10 @@ namespace BookStore.Controllers
         [Authorize(Roles = "Administrator,Worker")]
         public IActionResult PostBook([FromBody] CreateBookVM book)
         {
+            if(book.Price < 1)
+            {
+                return BadRequest();
+            }
             _booksRepository.PostBook(book);
             return Ok();
         }
