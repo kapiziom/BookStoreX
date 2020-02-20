@@ -6,7 +6,3 @@ Net.core WebApi
   * linq,
   * ms sql server,
   * jwt bearer auth</br>
-* Used programms:
-  * Visual Stuio2019,
-  * postman,
-  * ms sql management studio

@@ -91,5 +91,17 @@ namespace BookStore.Controllers
             _booksRepository.PutBook(book, id);
             return Ok();
         }
+
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "Administrator,Worker")]
+        public IActionResult DeleteBook(int id)
+        {
+            bool result = _booksRepository.DeleteBook(id);
+            if (result == true)
+            {
+                return Ok();
+            }
+            else return Conflict();
+        }
     }
 }

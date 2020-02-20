@@ -26,6 +26,7 @@ namespace BookStore.Repository
             if (cartCheck != null)//if user add same book
             {
                 cartCheck.NumberOfBooks = cartCheck.NumberOfBooks + addcart.NumberOfBooks;
+                cartCheck.CreatedDate = DateTime.Now;
             }
             else
             {
@@ -187,6 +188,36 @@ namespace BookStore.Repository
                 IsShipped = o.IsShipped
             };
             return orderVM;
+        }
+
+        public bool CheckCartElement(string userId, int id)
+        {
+            var cartElement = _appDbContext.CartElements.FirstOrDefault(m => m.UserId == userId && m.CartElementId == id);
+            if (cartElement == null)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+        public void DeleteCartElement(int id)
+        {
+            var cartElement = _appDbContext.CartElements.FirstOrDefault(m => m.CartElementId == id);
+            var book = _appDbContext.Books.FirstOrDefault(m => m.BookId == cartElement.BookID);
+            book.InStock = book.InStock + cartElement.NumberOfBooks;
+            _appDbContext.CartElements.RemoveRange(cartElement);
+            _appDbContext.SaveChanges();
+        }
+
+        public void EditCartElement(EditCartElement editCartElement, int id)
+        {
+            var element = _appDbContext.CartElements.FirstOrDefault(m => m.CartElementId == id);
+            element.NumberOfBooks = editCartElement.NumberOfBooks;
+            element.CreatedDate = DateTime.Now;
+            _appDbContext.SaveChanges();
         }
     }
 }

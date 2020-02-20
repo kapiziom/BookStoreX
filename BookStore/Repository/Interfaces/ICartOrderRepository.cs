@@ -15,6 +15,9 @@ namespace BookStore.Repository
         List<OrderVM> History(string userId);
         bool CheckUserOrders(string userId);
         OrderWithDetailsVM GetOrderDetails(int id);
+        void DeleteCartElement(int id);
+        bool CheckCartElement(string userId, int id);
+        void EditCartElement(EditCartElement editCartElement, int id);
 
     }
 }

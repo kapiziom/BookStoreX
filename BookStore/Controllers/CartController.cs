@@ -96,6 +96,35 @@ namespace BookStore.Controllers
             return Ok(message);
         }
 
+        [HttpDelete("DeleteElement/{id}")]
+        [Authorize]
+        public IActionResult DeleteCartElement(int id)
+        {
+            string userId = User.Claims.First(c => c.Type == "UserID").Value;
+            string role = _userRepository.GetRole(userId);
+            bool check = _cartRepository.CheckCartElement(userId, id);
+            if (check == true || role != "NormalUser")
+            {
+                _cartRepository.DeleteCartElement(id);
+                return Ok();
+            }
+            return Forbid();
+        }
+
+        [HttpPut("EditBooksNumber/{id}")]
+        [Authorize]
+        public IActionResult EditCartElement([FromBody] EditCartElement cartElement, int id)
+        {
+            string userId = User.Claims.First(c => c.Type == "UserID").Value;
+            bool check = _cartRepository.CheckCartElement(userId, id);
+            if(check == true)
+            {
+                _cartRepository.EditCartElement(cartElement, id);
+                return Ok();
+            }
+            return Forbid();
+        }
+
         [HttpGet("ShoppingHistory")]
         [Authorize]
         public IActionResult ShoppingHistory()

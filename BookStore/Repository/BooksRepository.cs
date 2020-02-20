@@ -180,6 +180,10 @@ namespace BookStore.Repository
         public void PostBook(CreateBookVM b)
         {
             var category = _appDbContext.Categories.FirstOrDefault(c => c.CategoryId == b.CategoryId);
+            if(b.CoverUri == null || b.CoverUri == "")
+            {
+                b.CoverUri = "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/1024px-No_image_available.svg.png";
+            }
             Books NewBook = new Books()
             {
                 Title = b.Title,
@@ -206,7 +210,10 @@ namespace BookStore.Repository
         public void PutBook(EditBookVM m, int id)
         {
             var b = _appDbContext.Books.FirstOrDefault(x => x.BookId == id);
-
+            if (m.CoverUri == null || m.CoverUri == "")
+            {
+                b.CoverUri = "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/1024px-No_image_available.svg.png";
+            }
             b.Title = m.Title;
             b.Publisher = m.Publisher;
             b.PublishedDate = m.PublishedDate;
@@ -214,12 +221,9 @@ namespace BookStore.Repository
             b.PageCount = m.PageCount;
             b.ISBN_10 = m.ISBN_10;
             b.ISBN_13 = m.ISBN_13;
-            b.CoverUri = m.CoverUri;
             b.Price = m.Price;
             b.Author = m.Author;
             b.CategoryID = m.CategoryId;
-            b.CategoryName = m.CategoryName;
-            b.Sold = m.Sold;
             b.InStock = m.InStock;
             b.IsDiscount = m.IsDiscount;
             b.DiscountPrice = m.DiscountPrice;
@@ -306,6 +310,22 @@ namespace BookStore.Repository
                 booksVM.Add(book);
             }
             return booksVM;
+        }
+
+        public bool DeleteBook(int id)
+        {
+            var book = _appDbContext.Books.FirstOrDefault(m => m.BookId == id);
+            var checkCart = _appDbContext.CartElements.FirstOrDefault(m => m.BookID == book.BookId);
+            if (checkCart == null)
+            {
+                _appDbContext.Books.Remove(book);
+                _appDbContext.SaveChanges();
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }

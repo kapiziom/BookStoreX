@@ -20,5 +20,6 @@ namespace BookStore.Repository
         string GetBookTitleById(int id);
         List<BooksWithoutDetailsVM> GetTop6New();
         List<BooksWithoutDetailsVM> GetTop6BestSellers();
+        bool DeleteBook(int id);
     }
 }
