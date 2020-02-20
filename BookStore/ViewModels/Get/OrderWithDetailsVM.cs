@@ -18,5 +18,6 @@ namespace BookStore.ViewModels
         public decimal TotalPrice { get; set; }
         public DateTime OrderDate { get; set; }
         public bool IsShipped { get; set; }
+        public List<OrderDetailsVM> orderDetailsVM { get; set; }
     }
 }

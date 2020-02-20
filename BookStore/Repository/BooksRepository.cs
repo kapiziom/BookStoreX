@@ -169,6 +169,7 @@ namespace BookStore.Repository
                 Price = b.Price,
                 Author = b.Author,
                 Category = b.CategoryName,
+                CategoryId = b.CategoryID,
                 Sold = b.Sold,
                 InStock = b.InStock,
                 IsDiscount = b.IsDiscount,
@@ -226,7 +227,14 @@ namespace BookStore.Repository
             b.CategoryID = m.CategoryId;
             b.InStock = m.InStock;
             b.IsDiscount = m.IsDiscount;
-            b.DiscountPrice = m.DiscountPrice;
+            if(m.IsDiscount == false)
+            {
+                b.DiscountPrice = null;
+            }
+            else
+            {
+                b.DiscountPrice = m.DiscountPrice;
+            }
             _appDbContext.SaveChanges();
         }
 
@@ -246,6 +254,10 @@ namespace BookStore.Repository
         public string GetBookTitleById(int id)
         {
             var b = _appDbContext.Books.FirstOrDefault(x => x.BookId == id);
+            if(b == null)
+            {
+                return "???";
+            }
             return b.Title;
         }
         

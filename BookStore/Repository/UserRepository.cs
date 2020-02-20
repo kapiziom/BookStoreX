@@ -46,38 +46,14 @@ namespace BookStore.Repository
         {
             var user = _appDbContext.Users.FirstOrDefault(u => u.Id == userId);
             user.LastEdit = DateTime.Now;
-            if (address.FirstName != null)
-            {
-                user.FirstName = address.FirstName;
-            }
-            if (address.LastName != null)
-            {
-                user.LastName = address.LastName;
-            }
-            if (address.Country != null)
-            {
-                user.Country = address.Country;
-            }
-            if (address.City != null)
-            {
-                user.City = address.City;
-            }
-            if (address.PostalCode != null)
-            {
-                user.PostalCode = address.PostalCode;
-            }
-            if (address.Street != null)
-            {
-                user.Street = address.Street;
-            }
-            if (address.Number != null)
-            {
-                user.Number = address.Number;
-            }
-            if (address.PhoneNumber != null)
-            {
-                user.PhoneNumber = address.PhoneNumber;
-            }
+            user.FirstName = address.FirstName;
+            user.LastName = address.LastName;
+            user.Country = address.Country;
+            user.City = address.City;
+            user.PostalCode = address.PostalCode;
+            user.Street = address.Street;
+            user.Number = address.Number;
+            user.PhoneNumber = address.PhoneNumber;
             _appDbContext.SaveChanges();
         }
 

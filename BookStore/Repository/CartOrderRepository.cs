@@ -185,7 +185,8 @@ namespace BookStore.Repository
                 StreetWithNumber = o.Street + " " + o.Number,
                 TotalPrice = o.Total,
                 OrderDate = o.OrderDate,
-                IsShipped = o.IsShipped
+                IsShipped = o.IsShipped,
+                orderDetailsVM = details
             };
             return orderVM;
         }

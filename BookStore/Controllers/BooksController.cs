@@ -89,7 +89,8 @@ namespace BookStore.Controllers
         {
             
             _booksRepository.PutBook(book, id);
-            return Ok();
+            var message = new { succeeded = true };
+            return Ok(message);
         }
 
         [HttpDelete("{id}")]
