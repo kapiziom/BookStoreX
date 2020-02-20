@@ -24,23 +24,14 @@ namespace BookStore.Controllers
     public class AccountController : ControllerBase
     {
         private readonly UserManager<AppUser> _userManager;
-        private readonly SignInManager<AppUser> _signInManager;
-        private readonly IConfiguration _configuration;
         private readonly ApplicationSettings _appSettings;
-        private readonly IUserRepository _userRepository;
 
         public AccountController(
             UserManager<AppUser> userManager,
-            SignInManager<AppUser> signInManager,
-            IConfiguration configuration,
-            IOptions<ApplicationSettings> appSettings,
-            IUserRepository userRepository)
+            IOptions<ApplicationSettings> appSettings)
         {            
-            _configuration = configuration;
             _userManager = userManager;
-            _signInManager = signInManager;
             _appSettings = appSettings.Value;
-            _userRepository = userRepository;
         }
 
         [HttpPost]

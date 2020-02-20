@@ -95,7 +95,8 @@ namespace BookStore
             });
 
             services.AddScoped<IResultInfo, ResultInfo>();
-            services.AddScoped<ICartOrderRepository, CartOrderRepository>();
+            services.AddScoped<ICartRepository, CartRepository>();
+            services.AddScoped<IOrderRepository, OrderRepository>();
             services.AddScoped<ICategoryRepository,CategoryRepository>();
             services.AddScoped<IBooksRepository,BooksRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
@@ -106,7 +107,7 @@ namespace BookStore
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, UserManager<AppUser> userManager, RoleManager<AppRoles> roleManager)
+        public void Configure(IApplicationBuilder app, UserManager<AppUser> userManager, RoleManager<AppRoles> roleManager)
         {
             
             IdentityDataInit.SeedData(userManager, roleManager);

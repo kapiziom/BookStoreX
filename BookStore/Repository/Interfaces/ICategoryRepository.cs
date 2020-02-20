@@ -11,8 +11,8 @@ namespace BookStore.Repository
     {
         List<CategoryVM> GetCategories();
         void PostCategory(CreateCategoryVM categoriesVM);
-        void PutCategory(CreateCategoryVM categoriesVM);
-        public bool CheckBase(string name);
-        void DeleteCategory(int id);
+        void PutCategory(CreateCategoryVM categoriesVM, int id);
+        bool CheckBase(string name);//jezeli nie ma w bazie to false
+        bool DeleteCategory(int id);//delete only if there is no books assigned to category
     }
 }

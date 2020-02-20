@@ -16,11 +16,9 @@ namespace BookStore.Controllers
     [ApiController]
     public class CategoryController : ControllerBase
     {
-        private readonly IBooksRepository _booksRepository;
         private readonly ICategoryRepository _categoryRepository;
-        public CategoryController(IBooksRepository booksRepository, ICategoryRepository categoryRepository)
+        public CategoryController(ICategoryRepository categoryRepository)
         {
-            _booksRepository = booksRepository;
             _categoryRepository = categoryRepository;
         }
 
@@ -48,9 +46,9 @@ namespace BookStore.Controllers
 
         [HttpPut("{id}")]
         [Authorize(Roles = "Administrator,Worker")]
-        public IActionResult PutCategory([FromBody] CreateCategoryVM category)
+        public IActionResult PutCategory([FromBody] CreateCategoryVM category, int id)
         {
-            _categoryRepository.PutCategory(category);
+            _categoryRepository.PutCategory(category, id);
             return Ok();
         }
 
@@ -58,8 +56,12 @@ namespace BookStore.Controllers
         [Authorize(Roles = "Administrator,Worker")]
         public IActionResult DeleteCategory(int id)
         {
-            _categoryRepository.DeleteCategory(id);
-            return Ok();
+            var result = _categoryRepository.DeleteCategory(id);
+            if (result == true)
+            {
+                return Ok();
+            }
+            else return Conflict();
         }
 
     }

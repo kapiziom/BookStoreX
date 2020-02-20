@@ -11,15 +11,13 @@ namespace BookStore.Repository
 {
     public class UserRepository : IUserRepository
     {
-        AppDbContext _appDbContext;
-        UserManager<AppUser> _userManager;
-        RoleManager<AppRoles> _roleManager;
+        private readonly AppDbContext _appDbContext;
+        private readonly UserManager<AppUser> _userManager;
 
-        public UserRepository(AppDbContext context, UserManager<AppUser> userManager, RoleManager<AppRoles> roleManager)
+        public UserRepository(AppDbContext context, UserManager<AppUser> userManager)
         {
             _appDbContext = context;
             _userManager = userManager;
-            _roleManager = roleManager;
         }
 
         public AddressVM GetUserAddress(string userId)

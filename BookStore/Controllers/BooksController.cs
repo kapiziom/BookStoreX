@@ -16,11 +16,9 @@ namespace BookStore.Controllers
     public class BooksController : ControllerBase
     {
         private readonly IBooksRepository _booksRepository;
-        private readonly ICategoryRepository _categoryRepository;
-        public BooksController(IBooksRepository booksRepository, ICategoryRepository categoryRepository)
+        public BooksController(IBooksRepository booksRepository)
         {
             _booksRepository = booksRepository;
-            _categoryRepository = categoryRepository;
         }
 
         [HttpGet("AllBooks")]

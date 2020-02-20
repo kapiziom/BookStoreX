@@ -6,18 +6,14 @@ using System.Threading.Tasks;
 
 namespace BookStore.Repository
 {
-    public interface ICartOrderRepository
+    public interface ICartRepository
     {
         public List<CartVM> GetUsersCart(string userId);
         void AddToCart(AddCartElementVM addcart, string userId);
-        void PlaceOrder(string userId);
         bool DeleteCart(string userId);
-        List<OrderVM> History(string userId);
-        bool CheckUserOrders(string userId);
-        OrderWithDetailsVM GetOrderDetails(int id);
         void DeleteCartElement(int id);
         bool CheckCartElement(string userId, int id);
-        void EditCartElement(EditCartElement editCartElement, int id);
+        bool EditCartElement(int number, int id);
 
     }
 }

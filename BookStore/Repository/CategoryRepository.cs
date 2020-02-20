@@ -48,7 +48,7 @@ namespace BookStore.Repository
 
         public bool CheckBase(string name)
         {
-            var categorymodel = _appDbContext.Categories.Where(x => x.CategoryName == name);
+            var categorymodel = _appDbContext.Categories.FirstOrDefault(m => m.CategoryName == name);
             if (categorymodel == null)
             {
                 return false;
@@ -69,18 +69,24 @@ namespace BookStore.Repository
             _appDbContext.SaveChanges();
         }
 
-        public void PutCategory(CreateCategoryVM categoriesVM)
+        public void PutCategory(CreateCategoryVM categoriesVM, int id)
         {
-            var category = _appDbContext.Categories.FirstOrDefault(x => x.CategoryName == categoriesVM.CategoryName);
+            var category = _appDbContext.Categories.FirstOrDefault(m => m.CategoryId == id);
             category.CategoryName = categoriesVM.CategoryName;
             _appDbContext.SaveChanges();
         }
 
-        public void DeleteCategory(int id)
+        public bool DeleteCategory(int id)
         {
-            var category = _appDbContext.Categories.FirstOrDefault(x => x.CategoryId == id);
-            _appDbContext.Categories.Remove(category);
-            _appDbContext.SaveChanges();
+            var category = _appDbContext.Categories.FirstOrDefault(m => m.CategoryId == id);
+            var book = _appDbContext.Books.FirstOrDefault(m => m.CategoryID == category.CategoryId);
+            if (book == null)
+            {
+                _appDbContext.Categories.Remove(category);
+                _appDbContext.SaveChanges();
+                return true;
+            }
+            else return false;
         }
 
     }

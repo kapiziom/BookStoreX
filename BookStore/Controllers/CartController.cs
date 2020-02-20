@@ -17,10 +17,10 @@ namespace BookStore.Controllers
     [ApiController]
     public class CartController : ControllerBase
     {
-        private readonly ICartOrderRepository _cartRepository;
+        private readonly ICartRepository _cartRepository;
         private readonly IBooksRepository _bookRepository;
         private readonly IUserRepository _userRepository;
-        public CartController(ICartOrderRepository cartRepository, IBooksRepository booksRepository, IUserRepository userRepository)
+        public CartController(ICartRepository cartRepository, IBooksRepository booksRepository, IUserRepository userRepository)
         {
             _userRepository = userRepository;
             _cartRepository = cartRepository;
@@ -59,28 +59,7 @@ namespace BookStore.Controllers
             return Ok(cart);
         }
 
-        [HttpPost("PlaceOrder")]
-        [Authorize]
-        public IActionResult PlaceOrder()
-        {
-            string userId = User.Claims.First(c => c.Type == "UserID").Value;
-            if (_userRepository.CheckAddressExist(userId) == false)
-            {
-                return BadRequest();
-            }
-            var CheckAddress = _userRepository.CheckAddressExist(userId);
-            var cart = _cartRepository.GetUsersCart(userId);
-            if(cart == null || cart.Count() < 1)
-            {
-                var error = new { succeeded = false };
-                return BadRequest(error);
-            }
-
-            _cartRepository.PlaceOrder(userId);
-            
-            var message = new { succeeded = true };
-            return Ok(message);
-        }
+        
 
         [HttpDelete("ClearCart")]
         [Authorize]
@@ -111,47 +90,24 @@ namespace BookStore.Controllers
             return Forbid();
         }
 
-        [HttpPut("EditBooksNumber/{id}")]
+        [HttpPut("EditBooksNumber/{id}/setNumber/{number}")]
         [Authorize]
-        public IActionResult EditCartElement([FromBody] EditCartElement cartElement, int id)
+        public IActionResult EditCartElement(int number, int id)
         {
             string userId = User.Claims.First(c => c.Type == "UserID").Value;
             bool check = _cartRepository.CheckCartElement(userId, id);
-            if(check == true)
+            if (check == true)
             {
-                _cartRepository.EditCartElement(cartElement, id);
-                return Ok();
+                bool edit = _cartRepository.EditCartElement(number, id);
+                if (edit == true)
+                {
+                    return Ok();
+                }
+                else return Conflict();
             }
             return Forbid();
         }
 
-        [HttpGet("ShoppingHistory")]
-        [Authorize]
-        public IActionResult ShoppingHistory()
-        {
-            string userId = User.Claims.First(c => c.Type == "UserID").Value;
-            if(_cartRepository.CheckUserOrders(userId) == false)
-            {
-                return NoContent();
-            }
-            var history = _cartRepository.History(userId);
-            return Ok(history);
-        }
-
-        [HttpGet("OrderDetails/{id}")]
-        [Authorize]
-        public IActionResult OrderDetails(int id)
-        {
-            string userId = User.Claims.First(c => c.Type == "UserID").Value;
-            var orderDetails = _cartRepository.GetOrderDetails(id);
-            var role = _userRepository.GetRole(userId);
-
-            if (orderDetails.UserId == userId || role != "NormalUser")
-            {
-                return Ok(orderDetails);
-                
-            }
-            return Forbid();
-        }
+        
     }
 }

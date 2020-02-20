@@ -7,6 +7,7 @@ namespace BookStore.ViewModels
 {
     public class CartVM
     {
+        public int CartElementID { get; set; }
         public int BookID { get; set; }
         public string BookTitle { get; set; }
         public int NumberOfBooks { get; set; }
