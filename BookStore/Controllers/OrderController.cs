@@ -75,5 +75,26 @@ namespace BookStore.Controllers
             return Forbid();
         }
 
+        [HttpGet("Unshipped")]
+        [Authorize(Roles = "Administrator,Worker")]
+        public IActionResult Unshipped()
+        {
+            var orders = _orderRepository.Unshipped();
+            return Ok(orders);
+        }
+
+        [HttpPut("Ship/{id}")]
+        [Authorize(Roles = "Administrator,Worker")]
+        public IActionResult Ship(int id)
+        {
+            var result = _orderRepository.Ship(id);
+            if (result == true)
+            {
+                return Ok();
+            }
+            else return BadRequest();
+            
+        }
+
     }
 }

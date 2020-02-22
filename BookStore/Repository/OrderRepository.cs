@@ -4,7 +4,6 @@ using BookStore.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace BookStore.Repository
 {
@@ -61,7 +60,7 @@ namespace BookStore.Repository
 
         public List<OrderVM> History(string userId)
         {
-            var user = _appDbContext.Users.FirstOrDefault(x => x.Id == userId);
+            var user = _appDbContext.Users.FirstOrDefault(m => m.Id == userId);
             var o = _appDbContext.Orders.Where(x => x.UserId == userId);
             List<OrderVM> orderVMs = new List<OrderVM>();
             foreach (var m in o)
@@ -77,6 +76,25 @@ namespace BookStore.Repository
                 orderVMs.Add(order);
             }
             return orderVMs;
+        }
+
+        public List<OrderVM> Unshipped()
+        {
+            var o = _appDbContext.Orders.Where(m => m.IsShipped == false);
+            List<OrderVM> orderVMs = new List<OrderVM>();
+            foreach (var m in o)
+            {
+                OrderVM order = new OrderVM()
+                {
+                    OrderId = m.OrderId,
+                    Email = m.Email,
+                    OrderDate = m.OrderDate,
+                    TotalPrice = m.Total,
+                    IsShipped = m.IsShipped
+                };
+                orderVMs.Add(order);
+            }
+            return orderVMs.OrderByDescending(m => m.OrderDate).ToList();
         }
 
         public bool CheckUserOrders(string userId)
@@ -125,5 +143,16 @@ namespace BookStore.Repository
             return orderVM;
         }
 
+        public bool Ship(int orderId)
+        {
+            var order = _appDbContext.Orders.FirstOrDefault(m => m.OrderId == orderId);
+            if (order != null)
+            {
+                order.IsShipped = true;
+                _appDbContext.SaveChanges();
+                return true;
+            }
+            else return false;
+        }
     }
 }

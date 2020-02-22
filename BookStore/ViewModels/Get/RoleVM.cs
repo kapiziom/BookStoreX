@@ -5,10 +5,9 @@ using System.Threading.Tasks;
 
 namespace BookStore.ViewModels
 {
-    public class HttpResult
+    public class RoleVM
     {
-        public bool succeeded { get; set; }
-        public List<Errors> errors { get; set; }
-        
+        public string RoleID { get; set; }
+        public string RoleName { get; set; }
     }
 }

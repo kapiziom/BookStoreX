@@ -23,7 +23,6 @@ using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.Extensions.Options;
 using BookStore.Repository;
-using BookStore.Service;
 
 namespace BookStore
 {
@@ -94,7 +93,6 @@ namespace BookStore
                 };
             });
 
-            services.AddScoped<IResultInfo, ResultInfo>();
             services.AddScoped<ICartRepository, CartRepository>();
             services.AddScoped<IOrderRepository, OrderRepository>();
             services.AddScoped<ICategoryRepository,CategoryRepository>();

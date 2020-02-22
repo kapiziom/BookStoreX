@@ -6,7 +6,6 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using BookStore.Models;
 using BookStore.Repository;
-using BookStore.Service;
 using BookStore.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -21,13 +20,11 @@ namespace BookStore.Controllers
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly IUserRepository _userRepository;
-        private readonly IResultInfo _resultInfo;
 
-        public UserProfileController(UserManager<AppUser> userManager, IUserRepository userRepository, IResultInfo resultInfo)
+        public UserProfileController(UserManager<AppUser> userManager, IUserRepository userRepository)
         {
             _userManager = userManager;
             _userRepository = userRepository;
-            _resultInfo = resultInfo;
         }
 
         [HttpGet("UserProfile")]
@@ -80,7 +77,6 @@ namespace BookStore.Controllers
         [Authorize]
         public IActionResult EditUserProfile(EditMailUsernameVM user)
         {
-            HttpResult result = null;
             string userId = User.Claims.First(c => c.Type == "UserID").Value;
             if (_userRepository.CheckBaseUsername(user.UserName, userId) == true || _userRepository.CheckBaseEmail(user.Email, userId) == true)
             {
@@ -89,8 +85,8 @@ namespace BookStore.Controllers
             }
 
             _userRepository.EditUserProfile(user, userId);
-            result = _resultInfo.SetResult(true, null);
-            return Ok(result);
+            var message = new { succeeded = true };
+            return Ok(message);
         }
 
         [HttpPut("ChangePassword")]
@@ -110,6 +106,33 @@ namespace BookStore.Controllers
             }
         }
 
-        
+        [HttpGet("UsersList")]
+        [Authorize(Roles = "Administrator")]
+        public IActionResult UsersList()
+        {
+            var users = _userRepository.GetUsersList();
+            return Ok(users);
+        }
+
+        [HttpPut("SetRole")]
+        [Authorize(Roles = "Administrator")]
+        public IActionResult SetRole([FromBody] SetRole setrole)
+        {
+            var result = _userRepository.SetRole(setrole);
+            if (result == true)
+            {
+                return Ok();
+            }
+            else return BadRequest();
+        }
+
+        [HttpGet("GetRoles")]
+        [Authorize(Roles = "Administrator")]
+        public IActionResult GetRoles()
+        {
+            var roles = _userRepository.GetRoles();
+            return Ok(roles);
+        }
+
     }
 }

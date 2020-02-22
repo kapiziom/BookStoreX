@@ -13,5 +13,7 @@ namespace BookStore.Repository
         List<OrderVM> History(string userId);
         bool CheckUserOrders(string userId);
         OrderWithDetailsVM GetOrderDetails(int id);
+        List<OrderVM> Unshipped();
+        bool Ship(int orderId);
     }
 }

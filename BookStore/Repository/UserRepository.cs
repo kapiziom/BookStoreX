@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace BookStore.Repository
 {
@@ -118,6 +118,55 @@ namespace BookStore.Repository
             var role = _appDbContext.Roles.FirstOrDefault(m => m.Id == userrole.RoleId);
             rolename = role.Name;
             return rolename;
+        }
+
+        public List<UserVM> GetUsersList()
+        {
+            var users = _appDbContext.Users.ToList();
+            List<UserVM> usersVM = new List<UserVM>();
+            foreach(var u in users)
+            {
+                UserVM user = new UserVM
+                {
+                    UserID = u.Id,
+                    UserName = u.UserName,
+                    Email = u.Email,
+                    CreationDate = u.CreationDate,
+                    RoleName = GetRole(u.Id)
+                };
+                usersVM.Add(user);
+            }
+
+            return usersVM;
+        }
+
+        public List<RoleVM> GetRoles()
+        {
+            var roles = _appDbContext.Roles.ToList();
+            List<RoleVM> rolesVM = new List<RoleVM>();
+            foreach (var r in roles)
+            {
+                RoleVM role = new RoleVM()
+                {
+                    RoleID = r.Id,
+                    RoleName = r.Name
+                };
+                rolesVM.Add(role);
+            }
+            return rolesVM.ToList();
+        }
+
+        public bool SetRole(SetRole setrole)
+        {
+            var userRole = _appDbContext.UserRoles.FirstOrDefault(m => m.UserId == setrole.UserID);
+            if (userRole != null)
+            {
+                _appDbContext.Entry(userRole).State = EntityState.Deleted;
+                _appDbContext.UserRoles.Add(new IdentityUserRole<string> { UserId = setrole.UserID, RoleId = setrole.RoleID });
+                _appDbContext.SaveChanges();
+                return true;
+            }
+            else return false;
         }
 
     }

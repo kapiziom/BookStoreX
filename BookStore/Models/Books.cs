@@ -23,7 +23,6 @@ namespace BookStore.Models
         public string Author { get; set; }
         public Categories Category { get; set; }
         public int CategoryID { get; set; }
-        public string CategoryName { get; set; }
         public int Sold { get; set; }
         public int InStock { get; set; }
         public bool IsDiscount { get; set; }

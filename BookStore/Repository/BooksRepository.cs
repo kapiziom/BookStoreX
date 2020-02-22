@@ -4,7 +4,6 @@ using BookStore.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace BookStore.Repository
 {
@@ -64,6 +63,7 @@ namespace BookStore.Repository
             var bookList = new BooksListVM { PageCount = 1 };
             var booksVM = new List<BooksWithoutDetailsVM>();
             List<Books> books;
+            var categoryModel = _appDbContext.Categories.FirstOrDefault(m => m.CategoryName == category);
 
             //By category
             if (category == "all" || string.IsNullOrEmpty(category))
@@ -72,7 +72,7 @@ namespace BookStore.Repository
             }
             else
             {
-                books = _appDbContext.Books.Where(m => m.CategoryName == category).ToList();
+                books = _appDbContext.Books.Where(m => m.Category == categoryModel).ToList();
             }
 
             //available pages
@@ -111,7 +111,8 @@ namespace BookStore.Repository
 
         public List<BooksWithoutDetailsVM> BooksInCategory(string category)
         {
-            List<Books> items = _appDbContext.Books.Where(m => m.CategoryName == category).ToList();
+            var categorymodel = _appDbContext.Categories.FirstOrDefault(m => m.CategoryName == category);
+            List<Books> items = _appDbContext.Books.Where(m => m.Category == categorymodel).ToList();
             List<BooksWithoutDetailsVM> books = new List<BooksWithoutDetailsVM>();
             foreach (var b in items)
             {
@@ -150,6 +151,7 @@ namespace BookStore.Repository
         public BooksDetailsVM GetBook(int id)
         {
             var b = _appDbContext.Books.FirstOrDefault(x => x.BookId == id);
+            var category = _appDbContext.Categories.FirstOrDefault(m => m.CategoryId == b.CategoryID);
             if(b == null)
             {
                 return null;
@@ -168,7 +170,7 @@ namespace BookStore.Repository
                 CoverUri = b.CoverUri,
                 Price = b.Price,
                 Author = b.Author,
-                Category = b.CategoryName,
+                Category = category.CategoryName,
                 CategoryId = b.CategoryID,
                 Sold = b.Sold,
                 InStock = b.InStock,
@@ -181,10 +183,11 @@ namespace BookStore.Repository
         public void PostBook(CreateBookVM b)
         {
             var category = _appDbContext.Categories.FirstOrDefault(c => c.CategoryId == b.CategoryId);
-            if(b.CoverUri == null || b.CoverUri == "")
+            if(string.IsNullOrEmpty(b.CoverUri))
             {
                 b.CoverUri = "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/1024px-No_image_available.svg.png";
             }
+            
             Books NewBook = new Books()
             {
                 Title = b.Title,
@@ -200,7 +203,6 @@ namespace BookStore.Repository
                 Author = b.Author,
                 Category = category,
                 CategoryID = category.CategoryId,
-                CategoryName = category.CategoryName,
                 Sold = 0,
                 InStock = b.InStock
             };
@@ -340,6 +342,5 @@ namespace BookStore.Repository
             }
         }
 
-        
     }
 }

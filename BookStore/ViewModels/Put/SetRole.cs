@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 namespace BookStore.ViewModels
 {
-    public class Errors
+    public class SetRole
     {
-        public string code { get; set; }
-        public string description { get; set; }
+        public string UserID { get; set; }
+        public string RoleID { get; set; }
     }
 }
