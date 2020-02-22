@@ -10,8 +10,8 @@ namespace BookStore.Repository
     {
         public List<CartVM> GetUsersCart(string userId);
         void AddToCart(AddCartElementVM addcart, string userId);
-        bool DeleteCart(string userId);//usuwa koszyk zwracajac ksiazki do magazynu
-        void DeleteCartElement(int id);//usuwa element koszyka
+        bool DeleteCart(string userId);
+        void DeleteCartElement(int id);
         bool CheckCartElement(string userId, int id);
         bool EditCartElement(int number, int id);
 
