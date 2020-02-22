@@ -6,4 +6,5 @@
   * linq,
   * ms sql server,
   * jwt bearer role based auth</br>
+* Frontend: https://github.com/kapiziom/BookStoreXFrontend
 
