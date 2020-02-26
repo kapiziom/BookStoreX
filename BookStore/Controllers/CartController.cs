@@ -50,15 +50,11 @@ namespace BookStore.Controllers
 
         [HttpGet]
         [Authorize]
-        public IActionResult GetCart()
+        public List<CartVM> GetCart()
         {
             string userId = User.Claims.First(c => c.Type == "UserID").Value;
             List<CartVM> cart = _cartRepository.GetUsersCart(userId);
-            if (cart == null)
-            {
-                return NoContent();
-            }
-            return Ok(cart);
+            return cart;
         }
 
         

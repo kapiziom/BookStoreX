@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BookStore.Repository;
+using BookStore.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -48,15 +49,11 @@ namespace BookStore.Controllers
 
         [HttpGet("ShoppingHistory")]
         [Authorize]
-        public IActionResult ShoppingHistory()
+        public List<OrderVM> ShoppingHistory()
         {
             string userId = User.Claims.First(c => c.Type == "UserID").Value;
-            if (_orderRepository.CheckUserOrders(userId) == false)
-            {
-                return NoContent();
-            }
             var history = _orderRepository.History(userId);
-            return Ok(history);
+            return history;
         }
 
         [HttpGet("OrderDetails/{id}")]
@@ -79,10 +76,10 @@ namespace BookStore.Controllers
 
         [HttpGet("Unshipped")]
         [Authorize(Roles = "Administrator,Worker")]
-        public IActionResult Unshipped()
+        public List<OrderVM> Unshipped()
         {
             var orders = _orderRepository.Unshipped();
-            return Ok(orders);
+            return orders;
         }
 
         [HttpPut("Ship/{id}")]

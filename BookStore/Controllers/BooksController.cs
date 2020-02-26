@@ -22,52 +22,46 @@ namespace BookStore.Controllers
         }
 
         [HttpGet("AllBooks")]
-        public IActionResult AllBooks()
+        public List<BooksWithoutDetailsVM> AllBooks()
         {
             var books = _booksRepository.GetBooksList();
-            return Ok(books);
+            return books;
         }
 
         [HttpGet("Page/{category}/{page}")]
-        public IActionResult GetPaged(int page, string category)
+        public BooksListVM GetPaged(int page, string category)
         {
             var books = _booksRepository.GetBooksByCategory(page, category);
-            return Ok(books);
+            return books;
         }
 
         [HttpGet("Page/{page}")]
-        public IActionResult GetPagedBooks(int page)
+        public BooksListVM GetPagedBooks(int page)
         {
             var books = _booksRepository.GetBooksPage(page);
-            return Ok(books);
+            return books;
         }
         [HttpGet("NewBooksTOP6")]
-        public IActionResult NewBooks()
+        public BooksListVM NewBooks()
         {
             var books = _booksRepository.GetTop6New();
             var booksVM = new BooksListVM() { PageCount = 1, BooksList = books };
-            return Ok(booksVM);
+            return booksVM;
         }
         
         [HttpGet("BestSellersTOP6")]
-        public IActionResult BestSeller()
+        public BooksListVM BestSeller()
         {
             var books = _booksRepository.GetTop6BestSellers();
             var booksVM = new BooksListVM() { PageCount = 1, BooksList = books };
-            return Ok(booksVM);
+            return booksVM;
         }
 
         [HttpGet("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult GetSingleBook(int id)
+        public BooksDetailsVM GetSingleBook(int id)
         {
             BooksDetailsVM book = _booksRepository.GetBook(id);
-            if (book == null)
-            {
-                return NotFound();
-            }
-            return Ok(book);
+            return book;
         }
 
         [HttpPost]
