@@ -81,8 +81,6 @@ namespace BookStore.Controllers
 
         [HttpDelete("DeleteElement/{id}")]
         [Authorize]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public IActionResult DeleteCartElement(int id)
         {
             string userId = User.Claims.First(c => c.Type == "UserID").Value;
