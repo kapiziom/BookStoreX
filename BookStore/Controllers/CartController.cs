@@ -29,6 +29,8 @@ namespace BookStore.Controllers
 
         [HttpPost("AddElement")]
         [Authorize]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
         public IActionResult AddToCart(AddCartElementVM addcart)
         {
             string userId = User.Claims.First(c => c.Type == "UserID").Value;
@@ -63,6 +65,8 @@ namespace BookStore.Controllers
 
         [HttpDelete("ClearCart")]
         [Authorize]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult DeleteCart()
         {
             string userId = User.Claims.First(c => c.Type == "UserID").Value;
@@ -77,6 +81,8 @@ namespace BookStore.Controllers
 
         [HttpDelete("DeleteElement/{id}")]
         [Authorize]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public IActionResult DeleteCartElement(int id)
         {
             string userId = User.Claims.First(c => c.Type == "UserID").Value;

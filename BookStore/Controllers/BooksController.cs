@@ -58,27 +58,30 @@ namespace BookStore.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<object> GetSingleBook(int id)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public IActionResult GetSingleBook(int id)
         {
-            var GetBook = Task.Run( () => _booksRepository.GetBook(id));
-            BooksDetailsVM book = await GetBook;
+            BooksDetailsVM book = _booksRepository.GetBook(id);
             if (book == null)
             {
                 return NotFound();
             }
-            return book;
+            return Ok(book);
         }
 
         [HttpPost]
         [Authorize(Roles = "Administrator,Worker")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult PostBook([FromBody] CreateBookVM book)
         {
-            if(book.Price < 1)
+            var createBook = _booksRepository.PostBook(book);
+            if(createBook == false)
             {
                 return BadRequest();
             }
-            _booksRepository.PostBook(book);
-            return Ok();
+            return Created("ok", book);
         }
 
         [HttpPut("{id}")]
@@ -93,14 +96,16 @@ namespace BookStore.Controllers
 
         [HttpDelete("{id}")]
         [Authorize(Roles = "Administrator,Worker")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult DeleteBook(int id)
         {
             bool result = _booksRepository.DeleteBook(id);
             if (result == true)
             {
                 return Ok();
-            }
-            else return Conflict();
+            };
+            return BadRequest();
         }
     }
 }

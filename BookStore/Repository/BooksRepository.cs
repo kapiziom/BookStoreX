@@ -151,11 +151,11 @@ namespace BookStore.Repository
         public BooksDetailsVM GetBook(int id)
         {
             var b = _appDbContext.Books.FirstOrDefault(x => x.BookId == id);
-            var category = _appDbContext.Categories.FirstOrDefault(m => m.CategoryId == b.CategoryID);
             if(b == null)
             {
                 return null;
             }
+            var category = _appDbContext.Categories.FirstOrDefault(m => m.CategoryId == b.CategoryID);
             BooksDetailsVM bookVM = new BooksDetailsVM()
             {
                 BookId = b.BookId,
@@ -180,40 +180,45 @@ namespace BookStore.Repository
             return bookVM;
         }
 
-        public void PostBook(CreateBookVM b)
+        public bool PostBook(CreateBookVM b)
         {
             var category = _appDbContext.Categories.FirstOrDefault(c => c.CategoryId == b.CategoryId);
-            if(string.IsNullOrEmpty(b.CoverUri))
+            if (category != null && b.Price > 0)
             {
-                b.CoverUri = "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/1024px-No_image_available.svg.png";
+                if (string.IsNullOrEmpty(b.CoverUri))
+                {
+                    b.CoverUri = "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/1024px-No_image_available.svg.png";
+                }
+
+                Books NewBook = new Books()
+                {
+                    Title = b.Title,
+                    Publisher = b.Publisher,
+                    PublishedDate = b.PublishedDate,
+                    AddedToStore = DateTime.Now,
+                    Description = b.Description,
+                    PageCount = b.PageCount,
+                    ISBN_10 = b.ISBN_10,
+                    ISBN_13 = b.ISBN_13,
+                    CoverUri = b.CoverUri,
+                    Price = b.Price,
+                    Author = b.Author,
+                    Category = category,
+                    CategoryID = category.CategoryId,
+                    Sold = 0,
+                    InStock = b.InStock
+                };
+                _appDbContext.Books.Add(NewBook);
+                _appDbContext.SaveChanges();
+                return true;
             }
-            
-            Books NewBook = new Books()
-            {
-                Title = b.Title,
-                Publisher = b.Publisher,
-                PublishedDate = b.PublishedDate,
-                AddedToStore = DateTime.Now,
-                Description = b.Description,
-                PageCount = b.PageCount,
-                ISBN_10 = b.ISBN_10,
-                ISBN_13 = b.ISBN_13,
-                CoverUri = b.CoverUri,
-                Price = b.Price,
-                Author = b.Author,
-                Category = category,
-                CategoryID = category.CategoryId,
-                Sold = 0,
-                InStock = b.InStock
-            };
-            _appDbContext.Books.Add(NewBook);
-            _appDbContext.SaveChanges();
+            else return false;
         }
 
         public void PutBook(EditBookVM m, int id)
         {
             var b = _appDbContext.Books.FirstOrDefault(x => x.BookId == id);
-            if (m.CoverUri == null || m.CoverUri == "")
+            if (string.IsNullOrEmpty(m.CoverUri))
             {
                 b.CoverUri = "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/1024px-No_image_available.svg.png";
             }
@@ -329,6 +334,10 @@ namespace BookStore.Repository
         public bool DeleteBook(int id)
         {
             var book = _appDbContext.Books.FirstOrDefault(m => m.BookId == id);
+            if(book == null)
+            {
+                return false;
+            }
             var checkCart = _appDbContext.CartElements.FirstOrDefault(m => m.BookID == book.BookId);
             if (checkCart == null)
             {

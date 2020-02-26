@@ -14,7 +14,7 @@ namespace BookStore.Repository
         BooksListVM GetBooksPage(int page);
         BooksListVM GetBooksByCategory(int page, string category);
         BooksDetailsVM GetBook(int id);
-        void PostBook(CreateBookVM book);
+        bool PostBook(CreateBookVM book);
         void PutBook(EditBookVM bookVM, int id);
         decimal GetBookPrice(int bookId);
         string GetBookTitleById(int id);
