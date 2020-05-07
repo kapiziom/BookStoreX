@@ -34,9 +34,7 @@ namespace BookStore.Controllers
             _appSettings = appSettings.Value;
         }
 
-        [HttpPost]
-        [Route("Login")]
-        //POST : /api/ApplicationUser/Login
+        [HttpPost("Login")]
         public async Task<IActionResult> Login(LoginVM model)
         {
             var user = await _userManager.FindByNameAsync(model.UserName);
