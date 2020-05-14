@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
@@ -8,14 +6,12 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using BookStore.ViewModels;
-using BookStore.Models;
 using Microsoft.AspNetCore.Authorization;
-using System.Net;
 using Microsoft.Extensions.Options;
-using BookStore.Repository;
+using BookStore.Domain;
+using BookStore.Services;
 
 namespace BookStore.Controllers
 {
@@ -25,13 +21,16 @@ namespace BookStore.Controllers
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly ApplicationSettings _appSettings;
+        private readonly IAddressService _addressService;
 
         public AccountController(
             UserManager<AppUser> userManager,
-            IOptions<ApplicationSettings> appSettings)
+            IOptions<ApplicationSettings> appSettings,
+            IAddressService addressService)
         {            
             _userManager = userManager;
             _appSettings = appSettings.Value;
+            _addressService = addressService;
         }
 
         [HttpPost("Login")]
@@ -67,23 +66,86 @@ namespace BookStore.Controllers
         public async Task<object> Register([FromBody] RegisterVM model)
         {
             var user = new AppUser { UserName = model.UserName, Email = model.Email, CreationDate = DateTime.Now };
-
-             try
-             { 
+            try
+            { 
                 var CheckEmail = await _userManager.FindByEmailAsync(model.Email);
                 var CheckUsername = await _userManager.FindByNameAsync(model.UserName);
                 var result = await _userManager.CreateAsync(user, model.Password);
                 await _userManager.AddToRoleAsync(user, "NormalUser");
-                    
+                   
                 return Ok(result);
-             }
-             catch (Exception ex)
-             {
+            }
+            catch (Exception ex)
+            {
                 throw ex;
-             }
+            }
+        }
+
+        [HttpPut("ChangePassword")]
+        [Authorize]
+        public async Task<IActionResult> ChangePassword(ChangePasswordVM changePasswordVM)
+        {
+            string userId = User.Claims.First(c => c.Type == "UserID").Value;
+            var user = await _userManager.FindByIdAsync(userId);
+            try
+            {
+                var result = await _userManager.ChangePasswordAsync(user, changePasswordVM.OldPassword, changePasswordVM.NewPassword);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        [HttpPut("ChangeEmail")]
+        [Authorize]
+        public async Task<IActionResult> ChangeEmail([FromBody] ChangeEmailVM email)
+        {
+            string userId = User.Claims.First(c => c.Type == "UserID").Value;
+
+            var usermodel = await _userManager.FindByIdAsync(userId);
+            try
+            {
+                usermodel.Email = email.NewEmail;
+                usermodel.NormalizedEmail = email.NewEmail.Normalize();
+                var result = await _userManager.UpdateAsync(usermodel);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        [HttpGet("Address")]
+        [Authorize]
+        public async Task<Address> GetAddress()
+        {
+            string userId = User.Claims.First(c => c.Type == "UserID").Value;
+            var address = await _addressService.GetAddressByUserId(userId);
+            return address;
+        }
+
+        [HttpPost("Address")]
+        [Authorize]
+        public async Task<IActionResult> AddAddress([FromBody] Address addAddress)
+        {
+            string userId = User.Claims.First(c => c.Type == "UserID").Value;
+            var address = await _addressService.AddAddress(addAddress, userId);
+            return Ok(address);
+        }
+
+        [HttpPut("Address/{addressID}")]
+        [Authorize]
+        public async Task<IActionResult> UpdateAddress([FromBody] Address addAddress, int addressID)
+        {
+            string userId = User.Claims.First(c => c.Type == "UserID").Value;
+            var address = await _addressService.UpdateAddress(addAddress, addressID, userId);
+            return Ok(address);
         }
 
 
-        
+
     }
 }

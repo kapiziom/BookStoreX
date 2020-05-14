@@ -32,6 +32,8 @@ namespace BookStore.Domain.Validators
                 .NotEmpty().WithMessage("Street name required");
             RuleFor(x => x.Number)
                 .NotEmpty().WithMessage("Home number required");
+            RuleFor(x => x.OrderStatus)
+                .IsInEnum().WithMessage("Value is not enum");
         }
     }
 }

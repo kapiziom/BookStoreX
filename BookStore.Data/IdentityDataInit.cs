@@ -20,6 +20,7 @@ namespace BookStore.Data
             if (userManager.FindByNameAsync("normaluser").Result == null)
             {
                 AppUser user = new AppUser();
+                user.Id = Guid.NewGuid().ToString();
                 user.UserName = "normaluser";
                 user.Email = "us1@x.d";
 
@@ -35,6 +36,7 @@ namespace BookStore.Data
             if (userManager.FindByNameAsync("worker").Result == null)
             {
                 AppUser user = new AppUser();
+                user.Id = Guid.NewGuid().ToString();
                 user.UserName = "worker";
                 user.Email = "us2@x.d";
 
@@ -49,6 +51,7 @@ namespace BookStore.Data
             if (userManager.FindByNameAsync("admin").Result == null)
             {
                 AppUser user = new AppUser();
+                user.Id = Guid.NewGuid().ToString();
                 user.UserName = "admin";
                 user.Email = "xd@xd.xd";
 
@@ -67,6 +70,7 @@ namespace BookStore.Data
             if (!roleManager.RoleExistsAsync("NormalUser").Result)
             {
                 AppRoles role = new AppRoles();
+                role.Id = Guid.NewGuid().ToString();
                 role.Name = "NormalUser";
                 role.Description = "Perform normal operations.";
                 IdentityResult roleResult = roleManager.
@@ -76,6 +80,7 @@ namespace BookStore.Data
             if (!roleManager.RoleExistsAsync("Worker").Result)
             {
                 AppRoles role = new AppRoles();
+                role.Id = Guid.NewGuid().ToString();
                 role.Name = "Worker";
                 role.Description = "Crud books etc";
                 IdentityResult roleResult = roleManager.
@@ -85,6 +90,7 @@ namespace BookStore.Data
             if (!roleManager.RoleExistsAsync("Administrator").Result)
             {
                 AppRoles role = new AppRoles();
+                role.Id = Guid.NewGuid().ToString();
                 role.Name = "Administrator";
                 role.Description = "Perform all the operations.";
                 IdentityResult roleResult = roleManager.

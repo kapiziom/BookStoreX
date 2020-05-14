@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace BookStore.Domain
 {
-    public class AppUser : IdentityUser<Guid>
+    public class AppUser : IdentityUser<string>
     {
         public DateTime CreationDate { get; set; }
 
-        public Guid AddressId { get; set; }
+        public int AddressId { get; set; }
         public Address Address { get; set; }
 
         public ICollection<CartElement> CartElements { get; set; }

@@ -7,7 +7,7 @@ namespace BookStore.Domain
     public class Address
     {
         public int AddressId { get; set; }
-        public Guid UserId { get; set; }
+        public string UserId { get; set; }
         public AppUser AppUser { get; set; }
 
         public DateTime LastEdit { get; set; }

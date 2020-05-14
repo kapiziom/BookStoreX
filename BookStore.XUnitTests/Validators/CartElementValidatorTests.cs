@@ -17,7 +17,7 @@ namespace BookStore.XUnitTests.Validators
         {
             var cartElement = new CartElement()
             {
-                UserId = Guid.NewGuid(),
+                UserId = Guid.NewGuid().ToString(),
                 BookID = 1,
                 NumberOfBooks = 2,
             };
@@ -32,7 +32,7 @@ namespace BookStore.XUnitTests.Validators
         {
             var cartElement = new CartElement()
             {
-                UserId = Guid.NewGuid(),
+                UserId = Guid.NewGuid().ToString(),
                 BookID = 1,
                 NumberOfBooks = 0,
             };

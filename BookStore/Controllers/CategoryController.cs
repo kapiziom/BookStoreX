@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using System.Web.Helpers;
-using BookStore.Models;
-using BookStore.Repository;
+using BookStore.Domain;
+using BookStore.Services;
 using BookStore.ViewModels;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookStore.Controllers
@@ -16,52 +13,41 @@ namespace BookStore.Controllers
     [ApiController]
     public class CategoryController : ControllerBase
     {
-        private readonly ICategoryRepository _categoryRepository;
-        public CategoryController(ICategoryRepository categoryRepository)
+        private readonly ICategoryService _categoryService;
+        public CategoryController(ICategoryService categoryService)
         {
-            _categoryRepository = categoryRepository;
+            _categoryService = categoryService;
         }
 
         [HttpGet]
-        public List<CategoryVM> GetCategories()
+        public async Task<List<Category>> GetCategories()
         {
-            var categories = _categoryRepository.GetCategories();
+            var categories = await _categoryService.GetCategories();
             return categories;
         }
 
         [HttpPost]
         [Authorize(Roles = "Administrator,Worker")]
-        public IActionResult PostCategory([FromBody] CreateCategoryVM category)
+        public async Task<IActionResult> AddCategory([FromBody] Category category)
         {
-            if(_categoryRepository.CheckBase(category.CategoryName) == true)
-            {
-                return Conflict();
-            }
-            else
-            {
-                _categoryRepository.PostCategory(category);
-                return Ok(category);
-            }
+            var newCategory = await _categoryService.InsertCategory(category);
+            return Ok(newCategory);
         }
 
         [HttpPut("{id}")]
         [Authorize(Roles = "Administrator,Worker")]
-        public IActionResult PutCategory([FromBody] CreateCategoryVM category, int id)
+        public async Task<IActionResult> UpdateCategory([FromBody] Category category, int id)
         {
-            _categoryRepository.PutCategory(category, id);
-            return Ok();
+            var upd = await _categoryService.UpdateCategory(category, id);
+            return Ok(upd);
         }
 
         [HttpDelete("{id}")]
         [Authorize(Roles = "Administrator,Worker")]
-        public IActionResult DeleteCategory(int id)
+        public async Task<IActionResult> DeleteCategory(int id)
         {
-            var result = _categoryRepository.DeleteCategory(id);
-            if (result == true)
-            {
-                return Ok();
-            }
-            else return Conflict();
+            await _categoryService.DeleteCategory(id);
+            return NoContent();
         }
 
     }

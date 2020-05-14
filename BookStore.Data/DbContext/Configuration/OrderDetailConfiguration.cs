@@ -18,8 +18,9 @@ namespace BookStore.Data.DbContext.Configuration
             builder.Property(t => t.NumberOfBooks)
                 .IsRequired();
 
-            builder.Property(t => t.Price)
-                .IsRequired();
+            builder.Property(t => t.UnitPrice)
+                .IsRequired()
+                .HasColumnType("decimal(5,2)");
 
             builder.HasOne(t => t.Order)
                 .WithMany(t => t.OrderDetails)
@@ -27,8 +28,7 @@ namespace BookStore.Data.DbContext.Configuration
 
             builder.HasOne(t => t.Book)
                 .WithMany(t => t.OrderDetails)
-                .HasForeignKey(t => t.BookID)
-                .OnDelete(DeleteBehavior.SetNull);
+                .HasForeignKey(t => t.BookID);
         }
     }
 }

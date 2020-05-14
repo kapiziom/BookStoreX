@@ -25,9 +25,11 @@ namespace BookStore.Domain.Validators
                 .Length(13).WithMessage("lenght must be equal to 13 characters");
             RuleFor(x => x.Price)
                 .NotEmpty().WithMessage("Price required")
-                .GreaterThanOrEqualTo(1).WithMessage("Price must be >= 1.00");
+                .GreaterThanOrEqualTo(1).WithMessage("Price must be >= 1.00")
+                .ScalePrecision(2, 5);
             RuleFor(x => x.DiscountPrice)
-                .GreaterThanOrEqualTo(0).WithMessage("Price must be >= 0.00");
+                .GreaterThanOrEqualTo(0).WithMessage("Price must be >= 0.00")
+                .ScalePrecision(2, 5);
             RuleFor(x => x.Author)
                 .NotEmpty().WithMessage("Author required");
             RuleFor(x => x.InStock)

@@ -17,7 +17,7 @@ namespace BookStore.XUnitTests.Validators
         {
             var order = new Order()
             {
-                UserId = Guid.NewGuid(),
+                UserId = Guid.NewGuid().ToString(),
                 Email = "example@email.com",
                 Phone = "222-222-2222",
                 FirstName = "FirstName",
@@ -40,7 +40,7 @@ namespace BookStore.XUnitTests.Validators
         {
             var order = new Order()
             {
-                UserId = Guid.NewGuid(),
+                UserId = Guid.NewGuid().ToString(),
                 Email = "exampleemail.com",
                 Phone = "222-222-2222",
                 FirstName = "FirstName",

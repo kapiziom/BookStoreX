@@ -51,7 +51,8 @@ namespace BookStore.Data.DbContext.Configuration
                 .IsRequired();
 
             builder.Property(t => t.TotalPrice)
-                .IsRequired();
+                .IsRequired()
+                .HasColumnType("decimal(5,2)");
 
             builder.Property(t => t.OrderDate)
                 .IsRequired();

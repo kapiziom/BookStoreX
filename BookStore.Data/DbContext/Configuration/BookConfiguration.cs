@@ -19,8 +19,7 @@ namespace BookStore.Data.DbContext.Configuration
                 .IsRequired();
             builder.HasOne(t => t.Category)
                 .WithMany(t => t.Books)
-                .HasForeignKey(t => t.CategoryID)
-                .OnDelete(DeleteBehavior.SetNull);
+                .HasForeignKey(t => t.CategoryID);
 
             builder.HasMany(t => t.CartElements)
                 .WithOne(t => t.Book)
@@ -39,13 +38,17 @@ namespace BookStore.Data.DbContext.Configuration
                 .IsRequired();
 
             builder.Property(t => t.Price)
-                .IsRequired();
+                .IsRequired()
+                .HasColumnType("decimal(5,2)");
 
             builder.Property(t => t.Author)
                 .IsRequired();
 
             builder.Property(t => t.InStock)
                .IsRequired();
+
+            builder.Property(t => t.DiscountPrice)
+                .HasColumnType("decimal(5,2)");
 
 
         }

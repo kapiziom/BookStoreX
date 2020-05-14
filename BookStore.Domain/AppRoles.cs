@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BookStore.Domain
 {
-    public class AppRoles : IdentityRole<Guid>
+    public class AppRoles : IdentityRole<string>
     {
         public string Description { get; set; }
     }

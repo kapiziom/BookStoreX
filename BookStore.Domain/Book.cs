@@ -30,5 +30,12 @@ namespace BookStore.Domain
         public int CategoryID { get; set; }
         public ICollection<CartElement> CartElements { get; set; }
         public ICollection<OrderDetail> OrderDetails { get; set; }
+
+        //
+        public decimal? RealPrice()
+        {
+            if (DiscountPrice == null) return Price;
+            else return DiscountPrice;
+        }
     }
 }

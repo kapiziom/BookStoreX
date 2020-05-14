@@ -10,14 +10,16 @@ namespace BookStore.Domain
     {
         public int OrderDetailId { get; set; }
         public int NumberOfBooks { get; set; }
-        public decimal Price { get; set; }
+        public decimal UnitPrice { get; set; }
 
         //foreign
         public int OrderID { get; set; }
         public Order Order { get; set; }
         public int BookID { get; set; }
         public Book Book { get; set; }
+        public decimal TotalPrice { get { return UnitPrice * NumberOfBooks; } }
 
-        public decimal TotalPrice() => Price * NumberOfBooks;
+        //
+        public decimal TotalPriceSet() => UnitPrice * NumberOfBooks;
     }
 }

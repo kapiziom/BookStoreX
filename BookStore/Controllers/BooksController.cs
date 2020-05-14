@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using BookStore.Repository;
+using BookStore.Domain;
+using BookStore.Domain.Common;
+using BookStore.Services;
 using BookStore.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using X.PagedList;
 
 namespace BookStore.Controllers
 {
@@ -15,91 +16,76 @@ namespace BookStore.Controllers
     [ApiController]
     public class BooksController : ControllerBase
     {
-        private readonly IBooksRepository _booksRepository;
-        public BooksController(IBooksRepository booksRepository)
+        private readonly IBookService _bookService;
+        public BooksController(IBookService bookService)
         {
-            _booksRepository = booksRepository;
+            _bookService = bookService;
         }
 
         [HttpGet("AllBooks")]
-        public List<BooksWithoutDetailsVM> AllBooks()
+        public async Task<List<Book>> AllBooks()
         {
-            var books = _booksRepository.GetBooksList();
+            var books = await _bookService.GetAllAsync();
             return books;
         }
 
-        [HttpGet("Page/{category}/{page}")]
-        public BooksListVM GetPaged(int page, string category)
+        [HttpGet("{category}/{page}/{itemsPerPage}")]
+        public async Task<PagedList<Book>> GetPagedBooksByCategory(string category, int page, int itemsPerPage)
         {
-            var books = _booksRepository.GetBooksByCategory(page, category);
+            var books = await _bookService.GetPagedBooks(m => m.Category.CategoryName == category, x => x.AddedToStore, page, itemsPerPage);
             return books;
         }
 
-        [HttpGet("Page/{page}")]
-        public BooksListVM GetPagedBooks(int page)
+        [HttpGet("{page}/{itemsPerPage}")]
+        public async Task<PagedList<Book>> GetPagedBooks(int page, int itemsPerPage)
         {
-            var books = _booksRepository.GetBooksPage(page);
+            var books = await _bookService.GetPagedBooks(null, x => x.AddedToStore, page, itemsPerPage);
             return books;
         }
+
         [HttpGet("NewBooksTOP6")]
-        public BooksListVM NewBooks()
+        public async Task<PagedList<Book>> NewestTop6()
         {
-            var books = _booksRepository.GetTop6New();
-            var booksVM = new BooksListVM() { PageCount = 1, BooksList = books };
-            return booksVM;
+            var books = await _bookService.GetPagedBooks(null, x => x.AddedToStore, 1, 6);
+            return books;
         }
         
         [HttpGet("BestSellersTOP6")]
-        public BooksListVM BestSeller()
+        public async Task<PagedList<Book>> BestSellersTop6()
         {
-            var books = _booksRepository.GetTop6BestSellers();
-            var booksVM = new BooksListVM() { PageCount = 1, BooksList = books };
-            return booksVM;
+            var books = await _bookService.GetPagedBooks(null, x => x.Sold, 1, 6);
+            return books;
         }
 
         [HttpGet("{id}")]
-        public BooksDetailsVM GetSingleBook(int id)
+        public async Task<Book> GetSingleBook(int id)
         {
-            BooksDetailsVM book = _booksRepository.GetBook(id);
+            Book book = await _bookService.FindAsync(id);
             return book;
         }
 
         [HttpPost]
         [Authorize(Roles = "Administrator,Worker")]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult PostBook([FromBody] CreateBookVM book)
+        public async Task<IActionResult> PostBook([FromBody] Book newbook)
         {
-            var createBook = _booksRepository.PostBook(book);
-            if(createBook == false)
-            {
-                return BadRequest();
-            }
-            return Created("ok", book);
+            var book = await _bookService.PostBook(newbook);
+            return Ok(book);
         }
 
         [HttpPut("{id}")]
         [Authorize(Roles = "Administrator,Worker")]
-        public IActionResult PutBook([FromBody] EditBookVM book, int id)
+        public async Task<IActionResult> UpdateBook([FromBody] Book updbook, int id)
         {
-            
-            _booksRepository.PutBook(book, id);
-            var message = new { succeeded = true };
-            return Ok(message);
+            var book = await _bookService.UpdateBook(updbook, id);
+            return Ok(book);
         }
 
         [HttpDelete("{id}")]
         [Authorize(Roles = "Administrator,Worker")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult DeleteBook(int id)
+        public async Task<IActionResult> DeleteBook(int id)
         {
-            bool result = _booksRepository.DeleteBook(id);
-            if (result == true)
-            {
-                return Ok();
-            };
-            return BadRequest();
+            await _bookService.DeleteBook(id);
+            return NoContent();
         }
     }
 }

@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using BookStore.Repository;
+using BookStore.Domain;
+using BookStore.Domain.Common;
+using BookStore.Services;
 using BookStore.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -14,85 +16,54 @@ namespace BookStore.Controllers
     [ApiController]
     public class OrderController : ControllerBase
     {
-        private readonly ICartRepository _cartRepository;
-        private readonly IUserRepository _userRepository;
-        private readonly IOrderRepository _orderRepository;
-        public OrderController(ICartRepository cartRepository, IUserRepository userRepository, IOrderRepository orderRepository)
+        private readonly IOrderService _orderService;
+        public OrderController(IOrderService orderService)
         {
-            _orderRepository = orderRepository;
-            _userRepository = userRepository;
-            _cartRepository = cartRepository;
+            _orderService = orderService;
         }
 
         [HttpPost("PlaceOrder")]
         [Authorize]
-        public IActionResult PlaceOrder()
+        public async Task<IActionResult> PlaceOrder([FromBody] Order order)
         {
             string userId = User.Claims.First(c => c.Type == "UserID").Value;
-            if (_userRepository.CheckAddressExist(userId) == false)
-            {
-                return BadRequest();
-            }
-            var CheckAddress = _userRepository.CheckAddressExist(userId);
-            var cart = _cartRepository.GetUsersCart(userId);
-            if (cart == null || cart.Count() < 1)
-            {
-                var error = new { succeeded = false };
-                return BadRequest(error);
-            }
-
-            _orderRepository.PlaceOrder(userId);
-
+            await _orderService.PlaceOrder(userId, order);
             var message = new { succeeded = true };
             return Ok(message);
         }
 
-        [HttpGet("ShoppingHistory")]
+        [HttpGet("ShoppingHistory/{page}/{itemsPerPage}")]
         [Authorize]
-        public List<OrderVM> ShoppingHistory()
+        public async Task<PagedList<Order>> ShoppingHistory(int page, int itemsPerPage)
         {
             string userId = User.Claims.First(c => c.Type == "UserID").Value;
-            var history = _orderRepository.History(userId);
+            var history = await _orderService.History(userId, page, itemsPerPage);
             return history;
         }
 
         [HttpGet("OrderDetails/{id}")]
         [Authorize]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public IActionResult OrderDetails(int id)
+        public async Task<IActionResult> OrderDetails(int id)
         {
             string userId = User.Claims.First(c => c.Type == "UserID").Value;
-            var orderDetails = _orderRepository.GetOrderDetails(id);
-            var role = _userRepository.GetRole(userId);
-
-            if (orderDetails.UserId == userId || role != "NormalUser")
-            {
-                return Ok(orderDetails);
-
-            }
-            return Forbid();
+            var order = await _orderService.GetOrderById(id, userId);
+            return Ok(order);
         }
 
         [HttpGet("Unshipped")]
         [Authorize(Roles = "Administrator,Worker")]
-        public List<OrderVM> Unshipped()
+        public async Task<PagedList<Order>> Unshipped(int page, int itemsPerPage)
         {
-            var orders = _orderRepository.Unshipped();
+            var orders = await _orderService.GetPagedOrders(m => m.IsShipped == false, x => x.OrderDate, page, itemsPerPage);
             return orders;
         }
 
         [HttpPut("Ship/{id}")]
         [Authorize(Roles = "Administrator,Worker")]
-        public IActionResult Ship(int id)
+        public async Task<IActionResult> Ship(int id)
         {
-            var result = _orderRepository.Ship(id);
-            if (result == true)
-            {
-                return Ok();
-            }
-            else return BadRequest();
-            
+            await _orderService.Ship(id);
+            return NoContent();
         }
 
     }

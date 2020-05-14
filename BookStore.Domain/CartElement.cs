@@ -12,7 +12,7 @@ namespace BookStore.Domain
         public int CartElementId { get; set; }
 
         public AppUser AppUser { get; set; }
-        public Guid UserId { get; set; }
+        public string UserId { get; set; }
         public int BookID { get; set; }
         public Book Book { get; set; }
 

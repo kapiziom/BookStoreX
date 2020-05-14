@@ -17,7 +17,7 @@ namespace BookStore.XUnitTests.Validators
         {
             var address = new Address()
             {
-                UserId = Guid.NewGuid(),
+                UserId = Guid.NewGuid().ToString(),
                 FirstName = "FirstName",
                 LastName = "LastName",
                 City = "City",
@@ -37,7 +37,7 @@ namespace BookStore.XUnitTests.Validators
         {
             var address = new Address()
             {
-                UserId = Guid.NewGuid(),
+                UserId = Guid.NewGuid().ToString(),
                 FirstName = "FirstName",
                 LastName = "LastName",
                 City = "City",
@@ -57,7 +57,7 @@ namespace BookStore.XUnitTests.Validators
         {
             var address = new Address()
             {
-                UserId = Guid.NewGuid(),
+                UserId = Guid.NewGuid().ToString(),
                 FirstName = "FirstName",
                 LastName = "LastName",
                 City = "Ci22ty",

@@ -1,5 +1,4 @@
-﻿using BookStore.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,8 +10,8 @@ namespace BookStore.ViewModels
         public int BookId { get; set; }
         public string Title { get; set; }
         public string Publisher { get; set; }
-        public DateTime PublishedDate { get; set; }
-        public DateTime AddedToStore { get; set; }
+        public string PublishedDate { get; set; }
+        public string AddedToStore { get; set; }
         public string Description { get; set; }
         public int PageCount { get; set; }
         public string ISBN_10 { get; set; }

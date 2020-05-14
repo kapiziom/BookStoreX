@@ -20,8 +20,7 @@ namespace BookStore.Data.DbContext.Configuration
 
             builder.HasMany(t => t.Books)
                 .WithOne(t => t.Category)
-                .HasForeignKey(t => t.CategoryID)
-                .OnDelete(DeleteBehavior.SetNull);
+                .HasForeignKey(t => t.CategoryID);
         }
     }
 }
