@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using BookStore.Domain;
 using BookStore.Domain.Common;
 using BookStore.Services;
@@ -17,9 +18,11 @@ namespace BookStore.Controllers
     public class BooksController : ControllerBase
     {
         private readonly IBookService _bookService;
-        public BooksController(IBookService bookService)
+        private readonly IMapper _mapper;
+        public BooksController(IBookService bookService, IMapper mapper)
         {
             _bookService = bookService;
+            _mapper = mapper;
         }
 
         [HttpGet("AllBooks")]
@@ -58,10 +61,11 @@ namespace BookStore.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<Book> GetSingleBook(int id)
+        public async Task<BooksDetailsVM> GetSingleBook(int id)
         {
-            Book book = await _bookService.FindAsync(id);
-            return book;
+            var book = await _bookService.GetBookIncludesByID(id);
+            var bookVM = _mapper.Map<BooksDetailsVM>(book);
+            return bookVM;
         }
 
         [HttpPost]

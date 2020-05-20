@@ -10,6 +10,6 @@ namespace BookStore.Services
     {
         Task<Address> GetAddressByUserId(string userId);
         Task<Address> AddAddress(Address address, string userId);
-        Task<Address> UpdateAddress(Address address, int addressId, string userId);
+        Task<Address> UpdateAddress(Address address, string userId);
     }
 }

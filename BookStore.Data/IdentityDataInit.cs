@@ -23,6 +23,7 @@ namespace BookStore.Data
                 user.Id = Guid.NewGuid().ToString();
                 user.UserName = "normaluser";
                 user.Email = "us1@x.d";
+                user.Address = new Address();
 
                 IdentityResult result = userManager.CreateAsync
                 (user, "P@ssw0rd").Result;
@@ -39,6 +40,7 @@ namespace BookStore.Data
                 user.Id = Guid.NewGuid().ToString();
                 user.UserName = "worker";
                 user.Email = "us2@x.d";
+                user.Address = new Address();
 
                 IdentityResult result = userManager.CreateAsync
                 (user, "P@ssw0rd").Result;
@@ -54,6 +56,7 @@ namespace BookStore.Data
                 user.Id = Guid.NewGuid().ToString();
                 user.UserName = "admin";
                 user.Email = "xd@xd.xd";
+                user.Address = new Address();
 
                 IdentityResult result = userManager.CreateAsync
                 (user, "P@ssw0rd").Result;

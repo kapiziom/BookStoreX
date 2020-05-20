@@ -7,7 +7,7 @@ using System.Text;
 
 namespace BookStore.Data.DbContext.Configuration
 {
-    public class CategoryConfiguration : IEntityTypeConfiguration<Category>
+    public class CategoryMap : IEntityTypeConfiguration<Category>
     {
         public void Configure(EntityTypeBuilder<Category> builder)
         {

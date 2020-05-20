@@ -29,9 +29,9 @@ namespace BookStore.Services
             throw new BookStoreXException(400, "invalid address", result);
         }
 
-        public async Task<Address> UpdateAddress(Address address, int addressId, string userId)
+        public async Task<Address> UpdateAddress(Address address, string userId)
         {
-            var entity = await _repository.FindAsync(addressId);
+            var entity = await _repository.FirstOrDefaultAsync(m => m.UserId == userId);
             if(entity == null)
                 throw new BookStoreXException(404, "Address Not Found");
 

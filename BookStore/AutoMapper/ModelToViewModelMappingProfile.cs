@@ -22,7 +22,15 @@ namespace BookStore.AutoMapper
                  .ForMember(dest => dest.PageCount, opt => opt.MapFrom(src => src.PageCount))
                  .ForMember(dest => dest.ISBN_10, opt => opt.MapFrom(src => src.ISBN_10))
                  .ForMember(dest => dest.ISBN_13, opt => opt.MapFrom(src => src.ISBN_13))
-                 .ForMember(dest => dest.CoverUri, opt => opt.MapFrom(src => src.CoverUri));
+                 .ForMember(dest => dest.CoverUri, opt => opt.MapFrom(src => src.CoverUri))
+                 .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Price))
+                 .ForMember(dest => dest.Author, opt => opt.MapFrom(src => src.Author))
+                 .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category.CategoryName))
+                 .ForMember(dest => dest.CategoryId, opt => opt.MapFrom(src => src.CategoryID))
+                 .ForMember(dest => dest.Sold, opt => opt.MapFrom(src => src.Sold))
+                 .ForMember(dest => dest.InStock, opt => opt.MapFrom(src => src.InStock))
+                 .ForMember(dest => dest.IsDiscount, opt => opt.MapFrom(src => src.IsDiscount))
+                 .ForMember(dest => dest.DiscountPrice, opt => opt.MapFrom(src => src.DiscountPrice));
         }
     }
 }

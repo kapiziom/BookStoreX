@@ -7,16 +7,12 @@ using System.Text.Json.Serialization;
 
 namespace BookStore.Domain.Common
 {
-    public class Result : Result<object>
-    {
-        public Result() : base(null) { }
-    }
-
     public class Result<T> where T : class
     {
         public Result(ValidationResult validationResult)
         {
             Errors = validationResult?.Errors.Select(x => x.ErrorMessage).ToList() ?? new List<string>();
+            
         }
 
         [JsonIgnore]
@@ -25,4 +21,11 @@ namespace BookStore.Domain.Common
         public bool Succeeded { get { return Errors.Count == 0; } }
 
     }
+
+    public class ErrorNew
+    {
+        public string err1 { get; set; }
+        public string err2 { get; set; }
+    }
+
 }

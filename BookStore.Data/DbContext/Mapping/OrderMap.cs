@@ -7,7 +7,7 @@ using System.Text;
 
 namespace BookStore.Data.DbContext.Configuration
 {
-    public class OrderConfiguration : IEntityTypeConfiguration<Order>
+    public class OrderMap : IEntityTypeConfiguration<Order>
     {
         public void Configure(EntityTypeBuilder<Order> builder)
         {
@@ -52,7 +52,7 @@ namespace BookStore.Data.DbContext.Configuration
 
             builder.Property(t => t.TotalPrice)
                 .IsRequired()
-                .HasColumnType("decimal(5,2)");
+                .HasColumnType("decimal(10,2)");
 
             builder.Property(t => t.OrderDate)
                 .IsRequired();

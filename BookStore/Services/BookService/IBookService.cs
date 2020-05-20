@@ -11,6 +11,7 @@ namespace BookStore.Services
     public interface IBookService : IGenericService<Book>
     {
         Task<Book> GetBookByID(int id);
+        Task<Book> GetBookIncludesByID(int id);
         Task<Book> PostBook(Book book);
         Task<Book> UpdateBook(Book book, int id);
         Task DeleteBook(int id);

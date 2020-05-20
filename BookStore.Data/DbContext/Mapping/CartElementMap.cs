@@ -7,7 +7,7 @@ using System.Text;
 
 namespace BookStore.Data.DbContext.Configuration
 {
-    public class CartElementConfiguration : IEntityTypeConfiguration<CartElement>
+    public class CartElementMap : IEntityTypeConfiguration<CartElement>
     {
         public void Configure(EntityTypeBuilder<CartElement> builder)
         {

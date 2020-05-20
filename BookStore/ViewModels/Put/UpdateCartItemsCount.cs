@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace BookStore.ViewModels
 {
-    public class EditCartElement
+    public class UpdateCartItemsCount
     {
         public int NumberOfBooks { get; set; }
     }

@@ -8,24 +8,17 @@ namespace BookStore.ViewModels
 {
     public class CreateBookVM
     {
-        [Required]
         public string Title { get; set; }
         public string Publisher { get; set; }
-        [Required]
         public DateTime PublishedDate { get; set; }        
         public string Description { get; set; }
-        [Required]
         public int PageCount { get; set; }
         public string ISBN_10 { get; set; }
         public string ISBN_13 { get; set; }
         public string CoverUri { get; set; }
-        [Required]
         public decimal Price { get; set; }
-        [Required]
         public string Author { get; set; }
-        [Required]
         public int CategoryId { get; set; }
-        [Required]
         public int InStock { get; set; }
     }
 }

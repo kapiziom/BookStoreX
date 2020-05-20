@@ -1,4 +1,4 @@
-﻿ using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -11,7 +11,7 @@ namespace BookStore.ViewModels
         [Required]
         public string UserId { get; set; }
         [Required]
-        [AvailableRoles]
+        //[AvailableRoles]
         public string Role { get; set; }
     }
 
@@ -20,12 +20,12 @@ namespace BookStore.ViewModels
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
 
-            if (value.ToString() == "Administrator" || value.ToString() == "NormalUser")
+            if (value.ToString() == "Administrator" || value.ToString() == "Banned" || value.ToString() == "NormalUser")
             {
                 return ValidationResult.Success;
             }
 
-            return new ValidationResult("Please enter a correct role('NormalUser' or 'Administrator')");
+            return new ValidationResult("Please enter a correct role('Banned', 'NormalUser' or 'Administrator')");
         }
     }
 }

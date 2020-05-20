@@ -65,14 +65,11 @@ namespace BookStore.Controllers
         [HttpPost("Register")]
         public async Task<object> Register([FromBody] RegisterVM model)
         {
-            var user = new AppUser { UserName = model.UserName, Email = model.Email, CreationDate = DateTime.Now };
+            var user = new AppUser { Id = Guid.NewGuid().ToString(), UserName = model.UserName, Email = model.Email, CreationDate = DateTime.Now, Address = new Address() };
             try
-            { 
-                var CheckEmail = await _userManager.FindByEmailAsync(model.Email);
-                var CheckUsername = await _userManager.FindByNameAsync(model.UserName);
+            {
                 var result = await _userManager.CreateAsync(user, model.Password);
                 await _userManager.AddToRoleAsync(user, "NormalUser");
-                   
                 return Ok(result);
             }
             catch (Exception ex)
@@ -118,6 +115,10 @@ namespace BookStore.Controllers
             }
         }
 
+        /// <summary>
+        /// Get current user's address
+        /// </summary>
+        /// <returns>elo</returns>
         [HttpGet("Address")]
         [Authorize]
         public async Task<Address> GetAddress()
@@ -127,21 +128,17 @@ namespace BookStore.Controllers
             return address;
         }
 
-        [HttpPost("Address")]
+        /// <summary>
+        /// Edit current user's address
+        /// </summary>
+        /// <param name="addAddress"></param>
+        /// <returns></returns>
+        [HttpPut("Address")]
         [Authorize]
-        public async Task<IActionResult> AddAddress([FromBody] Address addAddress)
+        public async Task<IActionResult> UpdateAddress([FromBody] Address addAddress)
         {
             string userId = User.Claims.First(c => c.Type == "UserID").Value;
-            var address = await _addressService.AddAddress(addAddress, userId);
-            return Ok(address);
-        }
-
-        [HttpPut("Address/{addressID}")]
-        [Authorize]
-        public async Task<IActionResult> UpdateAddress([FromBody] Address addAddress, int addressID)
-        {
-            string userId = User.Claims.First(c => c.Type == "UserID").Value;
-            var address = await _addressService.UpdateAddress(addAddress, addressID, userId);
+            var address = await _addressService.UpdateAddress(addAddress, userId);
             return Ok(address);
         }
 

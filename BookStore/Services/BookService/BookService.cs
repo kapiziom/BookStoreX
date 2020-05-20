@@ -27,6 +27,14 @@ namespace BookStore.Services
             else return book;
         }
 
+        public async Task<Book> GetBookIncludesByID(int id)
+        {
+            var book = await _repository.FirstOrDefaultAsync(m => m.BookId == id, x => x.Category);
+            if (book == null)
+                throw new BookStoreXException(404, "Not Found");
+            else return book;
+        }
+
         public async Task<Book> PostBook(Book book)
         {
             if (string.IsNullOrEmpty(book.CoverUri))

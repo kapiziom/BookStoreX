@@ -7,7 +7,7 @@ using System.Text;
 
 namespace BookStore.Data.DbContext.Configuration
 {
-    public class BookConfiguration : IEntityTypeConfiguration<Book>
+    public class BookMap : IEntityTypeConfiguration<Book>
     {
         public void Configure(EntityTypeBuilder<Book> builder)
         {
@@ -39,7 +39,7 @@ namespace BookStore.Data.DbContext.Configuration
 
             builder.Property(t => t.Price)
                 .IsRequired()
-                .HasColumnType("decimal(5,2)");
+                .HasColumnType("decimal(10,2)");
 
             builder.Property(t => t.Author)
                 .IsRequired();

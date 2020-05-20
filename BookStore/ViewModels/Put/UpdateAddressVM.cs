@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BookStore.ViewModels
 {
-    public class EditAddressVM
+    public class UpdateAddressVM
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
@@ -15,7 +15,5 @@ namespace BookStore.ViewModels
         public string PostalCode { get; set; }
         public string Street { get; set; }
         public string Number { get; set; }
-        [Phone]
-        public string PhoneNumber { get; set; }
     }
 }

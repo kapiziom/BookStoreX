@@ -18,9 +18,17 @@ namespace BookStore.Services
         public async Task<List<Category>> GetCategories() => await _repository.GetAllAsync();
         public async Task<Category> InsertCategory(Category category)
         {
-            var result = await _repository.IsExistAsync(m => m.CategoryName == category.CategoryName);
-            if (result == true)
+            bool exist = await _repository.IsExistAsync(m => m.CategoryName == category.CategoryName);
+            if (exist == true)
                 throw new BookStoreXException(409, "Category already exist");
+
+            //var res = _validator.Validate(category);
+            //if(!res.IsValid)
+            //    throw new BookStoreXException(400, "Category is invalid", res.Errors);
+
+            var result = Validate(category);
+            if(!result.Succeeded)
+                throw new BookStoreXException(400, "Category is invalid", result);
 
             return await _repository.InsertAsync(category);
         }

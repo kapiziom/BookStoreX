@@ -8,7 +8,6 @@ namespace BookStore.ViewModels
 {
     public class CreateCategoryVM
     {
-        [Required]
         public string CategoryName { get; set; }
     }
 }

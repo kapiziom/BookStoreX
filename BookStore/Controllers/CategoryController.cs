@@ -27,9 +27,10 @@ namespace BookStore.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Administrator,Worker")]
-        public async Task<IActionResult> AddCategory([FromBody] Category category)
+        //[Authorize(Roles = "Administrator,Worker")]
+        public async Task<IActionResult> AddCategory([FromBody] CreateCategoryVM create)
         {
+            Category category = new Category() { CategoryName = create.CategoryName };
             var newCategory = await _categoryService.InsertCategory(category);
             return Ok(newCategory);
         }

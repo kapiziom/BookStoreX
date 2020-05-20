@@ -7,7 +7,7 @@ using System.Text;
 
 namespace BookStore.Data.DbContext.Configuration
 {
-    public class OrderDetailConfiguration : IEntityTypeConfiguration<OrderDetail>
+    public class OrderDetailMap : IEntityTypeConfiguration<OrderDetail>
     {
         public void Configure(EntityTypeBuilder<OrderDetail> builder)
         {
@@ -20,7 +20,7 @@ namespace BookStore.Data.DbContext.Configuration
 
             builder.Property(t => t.UnitPrice)
                 .IsRequired()
-                .HasColumnType("decimal(5,2)");
+                .HasColumnType("decimal(10,2)");
 
             builder.HasOne(t => t.Order)
                 .WithMany(t => t.OrderDetails)

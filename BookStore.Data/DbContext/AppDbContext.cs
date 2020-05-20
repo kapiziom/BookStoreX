@@ -23,12 +23,12 @@ namespace BookStore.Data.DbContext
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-            builder.ApplyConfiguration(new AddressConfiguration());
-            builder.ApplyConfiguration(new BookConfiguration());
-            builder.ApplyConfiguration(new CartElementConfiguration());
-            builder.ApplyConfiguration(new CategoryConfiguration());
-            builder.ApplyConfiguration(new OrderConfiguration());
-            builder.ApplyConfiguration(new OrderDetailConfiguration());
+            builder.ApplyConfiguration(new AddressMap());
+            builder.ApplyConfiguration(new BookMap());
+            builder.ApplyConfiguration(new CartElementMap());
+            builder.ApplyConfiguration(new CategoryMap());
+            builder.ApplyConfiguration(new OrderMap());
+            builder.ApplyConfiguration(new OrderDetailMap());
         }
     }
 }
