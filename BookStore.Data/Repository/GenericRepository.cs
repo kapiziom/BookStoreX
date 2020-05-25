@@ -1,6 +1,7 @@
 ﻿using BookStore.Data.DbContext;
 using BookStore.Domain.Common;
 using BookStore.Domain.Exceptions;
+using BookStore.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;

@@ -22,10 +22,5 @@ namespace BookStore.Domain.Common
 
     }
 
-    public class ErrorNew
-    {
-        public string err1 { get; set; }
-        public string err2 { get; set; }
-    }
 
 }

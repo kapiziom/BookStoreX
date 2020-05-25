@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using BookStore.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
 using BookStore.Domain;
-using BookStore.Services;
+using BookStore.Application.ViewModels;
+using BookStore.Application.Services;
 
 namespace BookStore.Controllers
 {
@@ -115,10 +115,6 @@ namespace BookStore.Controllers
             }
         }
 
-        /// <summary>
-        /// Get current user's address
-        /// </summary>
-        /// <returns>elo</returns>
         [HttpGet("Address")]
         [Authorize]
         public async Task<Address> GetAddress()
@@ -128,11 +124,6 @@ namespace BookStore.Controllers
             return address;
         }
 
-        /// <summary>
-        /// Edit current user's address
-        /// </summary>
-        /// <param name="addAddress"></param>
-        /// <returns></returns>
         [HttpPut("Address")]
         [Authorize]
         public async Task<IActionResult> UpdateAddress([FromBody] Address addAddress)

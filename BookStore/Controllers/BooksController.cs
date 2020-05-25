@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using BookStore.Application.Services;
+using BookStore.Application.ViewModels;
 using BookStore.Domain;
 using BookStore.Domain.Common;
-using BookStore.Services;
-using BookStore.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -18,11 +18,9 @@ namespace BookStore.Controllers
     public class BooksController : ControllerBase
     {
         private readonly IBookService _bookService;
-        private readonly IMapper _mapper;
-        public BooksController(IBookService bookService, IMapper mapper)
+        public BooksController(IBookService bookService)
         {
             _bookService = bookService;
-            _mapper = mapper;
         }
 
         [HttpGet("AllBooks")]
@@ -59,13 +57,16 @@ namespace BookStore.Controllers
             var books = await _bookService.GetPagedBooks(null, x => x.Sold, 1, 6);
             return books;
         }
-
+        /// <summary>
+        /// to do
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet("{id}")]
         public async Task<BooksDetailsVM> GetSingleBook(int id)
         {
             var book = await _bookService.GetBookIncludesByID(id);
-            var bookVM = _mapper.Map<BooksDetailsVM>(book);
-            return bookVM;
+            return new BooksDetailsVM();
         }
 
         [HttpPost]

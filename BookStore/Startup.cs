@@ -17,24 +17,24 @@ using System.Text;
 using BookStore.Data.DbContext;
 using BookStore.Domain;
 using BookStore.Data.Repository;
-using BookStore.Services;
 using BookStore.Middleware;
 using FluentValidation;
 using BookStore.Domain.Validators;
 using System.Reflection;
 using System.IO;
 using AutoMapper;
-using BookStore.AutoMapper;
+using BookStore.Application.AutoMapper;
+using BookStore.Domain.Interfaces;
+using BookStore.Application.Services;
+using BookStore.Configurations;
 
 namespace BookStore
 {
     public class Startup
     {
-        private readonly IWebHostEnvironment _hostingEnvironment;
-        public Startup(IConfiguration configuration, IWebHostEnvironment hostingEnvironment)
+        public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-            _hostingEnvironment = hostingEnvironment;
         }
 
         public IConfiguration Configuration { get; }
@@ -58,44 +58,17 @@ namespace BookStore
             });
             services.AddControllers();
 
-            
-            services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection"))); services.AddDbContext<AppDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            //repositories, services, validators
+            services.RepositoryServicesSetup();
 
-            services.AddIdentity<AppUser, AppRoles>().AddEntityFrameworkStores<AppDbContext>()
-                .AddEntityFrameworkStores<AppDbContext>()
-                .AddDefaultTokenProviders();
-            services.Configure<IdentityOptions>(options =>
-            {
-                options.Password.RequireDigit = false;
-                options.Password.RequireNonAlphanumeric = false;
-                options.Password.RequireLowercase = false;
-                options.Password.RequireUppercase = false;
-                options.User.RequireUniqueEmail = true;
-            });
+            //DbSetup with Identity
+            services.AddDbSetup(Configuration);
 
             //JwtAuth
             var key = Encoding.UTF8.GetBytes(Configuration["ApplicationSettings:JWT_Secret"].ToString());
+            services.JWTsetup(key);
+            
 
-            services.AddAuthentication(x =>
-            {
-                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(x =>
-            {
-                x.RequireHttpsMetadata = false;
-                x.SaveToken = false;
-                x.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(key),
-                    ValidateIssuer = false,
-                    ValidateAudience = false,
-                    ClockSkew = TimeSpan.Zero
-                };
-            });
             // Auto Mapper Configurations
             var mappingConfig = new MapperConfiguration(mc =>
             {
@@ -106,67 +79,10 @@ namespace BookStore
             IMapper mapper = mappingConfig.CreateMapper();
             services.AddSingleton(mapper);
 
+            
+            //swagger
+            services.AddSwaggerSetup();
 
-            //repository
-            services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
-
-            //services
-            services.AddScoped<ICartService, CartService>();
-            services.AddScoped<IOrderService, OrderService>();
-            services.AddScoped<IOrderDetailService, OrderDetailService>();
-            services.AddScoped<ICategoryService, CategoryService>();
-            services.AddScoped<IBookService, BookService>();
-            services.AddScoped<IUserService, UserService>();
-            services.AddScoped<IAddressService, AddressService>();
-            //validators
-            services.AddScoped<IValidator<Address>, AddressValidator>();
-            services.AddScoped<IValidator<Book>, BookValidator>();
-            services.AddScoped<IValidator<CartElement>, CartElementValidator>();
-            services.AddScoped<IValidator<Category>, CategoryValidator>();
-            services.AddScoped<IValidator<Order>, OrderValidator>();
-
-
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
-                //c.IncludeXmlComments(GetXmlCommentsPath());
-                //c.DescribeAllEnumsAsStrings();
-                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-                {
-                    Description =
-        "JWT Authorization header using the Bearer scheme. \r\n\r\n Enter 'Bearer' [space] and then your token in the text input below.\r\n\r\nExample: \"Bearer 12345abcdef\"",
-                    Name = "Authorization",
-                    In = ParameterLocation.Header,
-                    Type = SecuritySchemeType.ApiKey,
-                    Scheme = "Bearer"
-                });
-
-                //Locate the XML file being generated by ASP.NET...
-                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.XML";
-                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-
-                //... and tell Swagger to use those XML comments.
-                c.IncludeXmlComments(xmlPath);
-
-                c.AddSecurityRequirement(new OpenApiSecurityRequirement()
-                {
-                    {
-                        new OpenApiSecurityScheme
-                        {
-                            Reference = new OpenApiReference
-                            {
-                                Type = ReferenceType.SecurityScheme,
-                                Id = "Bearer"
-                            },
-                            Scheme = "oauth2",
-                            Name = "Bearer",
-                            In = ParameterLocation.Header,
-
-                        },
-                        new List<string>()
-                    }
-                });
-            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -183,13 +99,8 @@ namespace BookStore
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseSwagger();
-
-            app.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
-                c.RoutePrefix = string.Empty;
-            });
+            //swagger
+            app.UseSwaggerSetup();
 
             app.UseEndpoints(endpoints =>
             {
@@ -197,11 +108,5 @@ namespace BookStore
             });
         }
 
-        private string GetXmlCommentsPath()
-        {
-            string contentRootPath = _hostingEnvironment.ContentRootPath;
-
-            return System.IO.Path.Combine(contentRootPath, "BookStore.xml");
-        }
     }
 }
