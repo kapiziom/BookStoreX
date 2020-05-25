@@ -12,6 +12,8 @@ namespace BookStore.Application.ViewModels
         public bool Available { get; set; }
         public string CoverUri { get; set; }
         public decimal Price { get; set; }
+        public bool IsDiscount { get; set; }
+        public decimal DisPrice { get; set; }
         public string Author { get; set; }
     }
 }
