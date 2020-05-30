@@ -17,7 +17,6 @@ namespace BookStore.Domain
         public Order Order { get; set; }
         public int BookID { get; set; }
         public Book Book { get; set; }
-        public decimal TotalPrice { get { return UnitPrice * NumberOfBooks; } }
 
         //
         public decimal TotalPriceSet() => UnitPrice * NumberOfBooks;

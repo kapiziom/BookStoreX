@@ -1,5 +1,6 @@
-﻿using BookStore.Data.DbContext.Configuration;
+﻿using BookStore.Data.DbContext.Mapping;
 using BookStore.Domain;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;

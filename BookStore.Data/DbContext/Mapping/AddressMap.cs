@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using BookStore.Domain;
 
-namespace BookStore.Data.DbContext.Configuration
+namespace BookStore.Data.DbContext.Mapping
 {
     public class AddressMap : IEntityTypeConfiguration<Address>
     {

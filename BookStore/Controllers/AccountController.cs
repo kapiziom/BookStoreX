@@ -10,8 +10,9 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
 using BookStore.Domain;
-using BookStore.Application.ViewModels;
-using BookStore.Application.Services;
+using BookStore.ViewModels;
+using BookStore.Services;
+using AutoMapper;
 
 namespace BookStore.Controllers
 {
@@ -22,15 +23,17 @@ namespace BookStore.Controllers
         private readonly UserManager<AppUser> _userManager;
         private readonly ApplicationSettings _appSettings;
         private readonly IAddressService _addressService;
+        private readonly IMapper _mapper;
 
         public AccountController(
             UserManager<AppUser> userManager,
             IOptions<ApplicationSettings> appSettings,
-            IAddressService addressService)
+            IAddressService addressService, IMapper mapper)
         {            
             _userManager = userManager;
             _appSettings = appSettings.Value;
             _addressService = addressService;
+            _mapper = mapper;
         }
 
         [HttpPost("Login")]
@@ -117,20 +120,21 @@ namespace BookStore.Controllers
 
         [HttpGet("Address")]
         [Authorize]
-        public async Task<Address> GetAddress()
+        public async Task<AddressVM> GetAddress()
         {
             string userId = User.Claims.First(c => c.Type == "UserID").Value;
             var address = await _addressService.GetAddressByUserId(userId);
-            return address;
+            return _mapper.Map<AddressVM>(address);
         }
 
         [HttpPut("Address")]
         [Authorize]
-        public async Task<IActionResult> UpdateAddress([FromBody] Address addAddress)
+        public async Task<IActionResult> UpdateAddress([FromBody] UpdateAddressVM addAddress)
         {
             string userId = User.Claims.First(c => c.Type == "UserID").Value;
-            var address = await _addressService.UpdateAddress(addAddress, userId);
-            return Ok(address);
+            var address = _mapper.Map<Address>(addAddress);
+            var result = await _addressService.UpdateAddress(address, userId);
+            return Ok(_mapper.Map<AddressVM>(address));
         }
 
 

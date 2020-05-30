@@ -4,13 +4,14 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using BookStore.Application.Services;
-using BookStore.Application.ViewModels;
+using BookStore.Services;
+using BookStore.ViewModels;
 using BookStore.Domain;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using AutoMapper;
 
 namespace BookStore.Controllers
 {
@@ -20,21 +21,31 @@ namespace BookStore.Controllers
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly RoleManager<AppRoles> _roleManager;
-        private readonly IUserService _userService;
+        private readonly IMapper _mapper;
 
-        public AdminController(UserManager<AppUser> userManager, RoleManager<AppRoles> roleManager, IUserService userService)
+        public AdminController(UserManager<AppUser> userManager, RoleManager<AppRoles> roleManager, IMapper mapper)
         {
             _userManager = userManager;
             _roleManager = roleManager;
-            _userService = userService;
+            _mapper = mapper;
         }
 
         [HttpGet("UsersList")]
-        [Authorize(Roles = "Administrator")]
-        public IActionResult UsersList()
+        //[Authorize(Roles = "Administrator")]
+        public async Task<IActionResult> UsersList()
         {
-            var users = _userService.GetAllAsync();
-            return Ok(users);
+            var users = _userManager.Users;
+
+            List<UserVM> VM = new List<UserVM>();
+
+            foreach (var u in users)
+            {
+                var roles = await _userManager.GetRolesAsync(u);
+                var user = _mapper.Map<UserVM>(u);
+                user.RoleName = roles.FirstOrDefault();
+                VM.Add(user);
+            }
+            return Ok(VM);
         }
 
         [HttpPut("SetRole")]

@@ -9,5 +9,6 @@ namespace BookStore.Domain
     public class AppRoles : IdentityRole<string>
     {
         public string Description { get; set; }
+
     }
 }

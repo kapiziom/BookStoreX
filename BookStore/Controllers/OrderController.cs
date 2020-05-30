@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using BookStore.Application.Services;
+using BookStore.Services;
 using BookStore.Domain;
 using BookStore.Domain.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using AutoMapper;
+using BookStore.ViewModels;
 
 namespace BookStore.Controllers
 {
@@ -16,28 +18,37 @@ namespace BookStore.Controllers
     public class OrderController : ControllerBase
     {
         private readonly IOrderService _orderService;
-        public OrderController(IOrderService orderService)
+        private readonly IMapper _mapper;
+        public OrderController(IOrderService orderService, IMapper mapper)
         {
             _orderService = orderService;
+            _mapper = mapper;
         }
 
         [HttpPost("PlaceOrder")]
         [Authorize]
-        public async Task<IActionResult> PlaceOrder([FromBody] Order order)
+        public async Task<IActionResult> PlaceOrder([FromBody] PlaceOrderVM place)
         {
             string userId = User.Claims.First(c => c.Type == "UserID").Value;
-            await _orderService.PlaceOrder(userId, order);
-            var message = new { succeeded = true };
-            return Ok(message);
+            await _orderService.PlaceOrder(userId, _mapper.Map<Order>(place));
+            return Ok(new { succeeded = true });
         }
 
         [HttpGet("ShoppingHistory/{page}/{itemsPerPage}")]
         [Authorize]
-        public async Task<PagedList<Order>> ShoppingHistory(int page, int itemsPerPage)
+        public async Task<PagedList<OrderVM>> ShoppingHistory(int page, int itemsPerPage)
         {
             string userId = User.Claims.First(c => c.Type == "UserID").Value;
             var history = await _orderService.History(userId, page, itemsPerPage);
-            return history;
+            var vm = new PagedList<OrderVM>()
+            {
+                TotalItems = history.TotalItems,
+                PageCount = history.PageCount,
+                Page = page,
+                ItemsPerPage = itemsPerPage,
+                Items = _mapper.Map<List<OrderVM>>(history.Items),
+            };
+            return vm;
         }
 
         [HttpGet("OrderDetails/{id}")]
@@ -46,15 +57,24 @@ namespace BookStore.Controllers
         {
             string userId = User.Claims.First(c => c.Type == "UserID").Value;
             var order = await _orderService.GetOrderById(id, userId);
-            return Ok(order);
+            var vm = _mapper.Map<OrderWithDetailsVM>(order);
+            return Ok(vm);
         }
 
         [HttpGet("Unshipped")]
         [Authorize(Roles = "Administrator,Worker")]
-        public async Task<PagedList<Order>> Unshipped(int page, int itemsPerPage)
+        public async Task<PagedList<OrderVM>> Unshipped(int page, int itemsPerPage)
         {
             var orders = await _orderService.GetPagedOrders(m => m.IsShipped == false, x => x.OrderDate, page, itemsPerPage);
-            return orders;
+            var vm = new PagedList<OrderVM>()
+            {
+                TotalItems = orders.TotalItems,
+                PageCount = orders.PageCount,
+                Page = page,
+                ItemsPerPage = itemsPerPage,
+                Items = _mapper.Map<List<OrderVM>>(orders.Items),
+            };
+            return vm;
         }
 
         [HttpPut("Ship/{id}")]

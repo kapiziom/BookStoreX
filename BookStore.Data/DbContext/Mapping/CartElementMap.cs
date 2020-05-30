@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace BookStore.Data.DbContext.Configuration
+namespace BookStore.Data.DbContext.Mapping
 {
     public class CartElementMap : IEntityTypeConfiguration<CartElement>
     {

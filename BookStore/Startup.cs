@@ -8,7 +8,7 @@ using System.Text;
 using BookStore.Domain;
 using BookStore.Middleware;
 using AutoMapper;
-using BookStore.Application.AutoMapper;
+using BookStore.AutoMapper;
 using BookStore.Configurations;
 
 namespace BookStore
@@ -39,7 +39,9 @@ namespace BookStore
                         .AllowAnyHeader();
                     });
             });
-            services.AddControllers();
+            services.AddControllers().AddNewtonsoftJson(options =>
+                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+             );
 
             //repositories, services, validators
             services.RepositoryServicesSetup();

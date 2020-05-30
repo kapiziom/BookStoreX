@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using BookStore.Application.Services;
-using BookStore.Application.ViewModels;
+using BookStore.Services;
+using BookStore.ViewModels;
 using BookStore.Domain;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using AutoMapper;
 
 namespace BookStore.Controllers
 {
@@ -14,32 +15,31 @@ namespace BookStore.Controllers
     public class CategoryController : ControllerBase
     {
         private readonly ICategoryService _categoryService;
-        public CategoryController(ICategoryService categoryService)
+        private readonly IMapper _mapper;
+        public CategoryController(ICategoryService categoryService, IMapper mapper)
         {
             _categoryService = categoryService;
+            _mapper = mapper;
         }
 
         [HttpGet]
-        public async Task<List<Category>> GetCategories()
-        {
-            var categories = await _categoryService.GetCategories();
-            return categories;
-        }
+        public async Task<List<CategoryVM>> GetCategories() => 
+            _mapper.Map<List<CategoryVM>>(await _categoryService.GetCategories());
+
 
         [HttpPost]
-        //[Authorize(Roles = "Administrator,Worker")]
+        [Authorize(Roles = "Administrator,Worker")]
         public async Task<IActionResult> AddCategory([FromBody] CreateCategoryVM create)
         {
-            Category category = new Category() { CategoryName = create.CategoryName };
-            var newCategory = await _categoryService.InsertCategory(category);
+            var newCategory = await _categoryService.InsertCategory(_mapper.Map<Category>(create));
             return Ok(newCategory);
         }
 
         [HttpPut("{id}")]
         [Authorize(Roles = "Administrator,Worker")]
-        public async Task<IActionResult> UpdateCategory([FromBody] Category category, int id)
+        public async Task<IActionResult> UpdateCategory([FromBody] CreateCategoryVM category, int id)
         {
-            var upd = await _categoryService.UpdateCategory(category, id);
+            var upd = await _categoryService.UpdateCategory(_mapper.Map<Category>(category), id);
             return Ok(upd);
         }
 

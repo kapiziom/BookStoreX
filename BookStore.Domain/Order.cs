@@ -1,5 +1,4 @@
-﻿using BookStore.Domain.Enums;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -25,18 +24,7 @@ namespace BookStore.Domain
         public DateTime OrderDate { get; set; }
 
         public bool IsShipped { get; set; }
-        public OrderStatus OrderStatus { get; set; }
         public ICollection<OrderDetail> OrderDetails { get; set; }
-        public decimal TotalPrice2 { get { return SetPrice(); } }
-
-        public decimal SetPrice()
-        {
-            decimal price = 0;
-            foreach(var i in OrderDetails)
-            {
-                price = price + i.TotalPrice;
-            }
-            return price;
-        }
+        
     }
 }
