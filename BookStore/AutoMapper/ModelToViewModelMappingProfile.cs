@@ -43,6 +43,10 @@ namespace BookStore.AutoMapper
                 .ForMember(dest => dest.DisPrice, opt => opt.MapFrom(src => src.DiscountPrice))
                 .ForMember(dest => dest.Author, opt => opt.MapFrom(src => src.Author));
 
+            CreateMap<Category, CategoryVM>()
+                .ForMember(dest => dest.CategoryId, opt => opt.MapFrom(src => src.CategoryId))
+                .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.CategoryName));
+
             CreateMap<Address, AddressVM>()
                 .ForMember(dest => dest.UserID, opt => opt.MapFrom(src => src.UserId))
                 .ForMember(dest => dest.LastEdit, opt => opt.MapFrom(src => src.LastEdit))
