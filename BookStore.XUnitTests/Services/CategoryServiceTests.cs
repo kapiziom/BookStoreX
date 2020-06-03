@@ -33,7 +33,9 @@ namespace BookStore.XUnitTests.Services
 
             var service = new CategoryService(
                 categoryRepoMock.Object, new CategoryValidator());
+
             categoryRepoMock.Setup(x => x.IsExistAsync(y => y.CategoryName == create.CategoryName)).ReturnsAsync(true);
+
             var result = service.InsertCategory(create);
             Assert.Equal("Duplicate, category already exist.", result.Exception.InnerException.Message);
 
@@ -49,7 +51,9 @@ namespace BookStore.XUnitTests.Services
 
             var service = new CategoryService(
                categoryRepoMock.Object, new CategoryValidator());
+
             categoryRepoMock.Setup(x => x.IsExistAsync(y => y.CategoryName == create.CategoryName)).ReturnsAsync(false);
+
             var result = service.InsertCategory(create);
 
             Assert.NotNull(result);

@@ -31,50 +31,39 @@ namespace BookStore.Services
             return cart;
         }
 
-        //
-        public async Task<Result<CartElement>> AddToCart(CartElement cartElement, string userId)
+
+        public async Task<CartElement> AddCart(CartElement cartElement, string userId)
         {
             if (await IsExistAsync(m => m.BookID == cartElement.BookID && m.UserId == userId))
-                throw new BookStoreXException(409, "Element is in cart");
+                return await UpdateNumberOfBooks(cartElement, userId);
 
-            var book = await _bookService.GetBookByID(cartElement.BookID);//if null throw notfound
+            else
+                return await AddNewItem(cartElement, userId);
+        }
 
-            if (cartElement.NumberOfBooks > book.InStock)
-                throw new BookStoreXException(409, "You cant get more books than we have");
+        public async Task<CartElement> AddNewItem(CartElement cartElement, string userId)
+        {
+            cartElement.UserId = userId;
+            await _bookService.ChangeBookInStock(cartElement.BookID, cartElement.NumberOfBooks);
 
             var result = Validate(cartElement);
             if (result.Succeeded)
             {
-                book.InStock = book.InStock - cartElement.NumberOfBooks;
-                result.Value = await _repository.InsertAsync(cartElement);
-                return result;
+                return await _repository.InsertAsync(cartElement);
             }
             throw new BookStoreXException(400, null, result);
         }
 
-        public async Task<Result<CartElement>> ChangeNumberOfBooksInCart(int bookId, int numberOfBooks, string userId)
+        public async Task<CartElement> UpdateNumberOfBooks(CartElement cartElement, string userId)
         {
-            var cartElement = await _repository.FirstOrDefaultAsync(m => m.BookID == bookId && m.UserId == userId);
-            if (cartElement == null)
-                throw new BookStoreXException(404, "Not Found");
+            var cart = await _repository.FirstOrDefaultAsync(m => m.BookID == cartElement.BookID && m.UserId == userId);
 
-            var book = await _bookService.GetBookByID(bookId);
+            await _bookService.ChangeBookInStock(cartElement.BookID, cartElement.NumberOfBooks - cart.NumberOfBooks);
 
-            if (cartElement.NumberOfBooks > book.InStock)
-                throw new BookStoreXException(409, "You cant get more books than we have");
+            cart.NumberOfBooks = cartElement.NumberOfBooks;
+            cart.CreatedDate = DateTime.Now;
 
-            book.InStock = book.InStock - cartElement.NumberOfBooks;
-            cartElement.NumberOfBooks = cartElement.NumberOfBooks + numberOfBooks;
-            cartElement.CreatedDate = DateTime.Now;
-
-            var result = Validate(cartElement);
-            if (result.Succeeded)
-            {
-                book.InStock = book.InStock - cartElement.NumberOfBooks;
-                result.Value = await _repository.InsertAsync(cartElement);
-                return result;
-            }
-            throw new BookStoreXException(400, null, result);
+            return await _repository.UpdateAsync(cart);
         }
 
         //Clear Cart, delete Cart items assigned to user

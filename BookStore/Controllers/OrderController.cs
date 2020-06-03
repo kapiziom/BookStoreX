@@ -82,7 +82,7 @@ namespace BookStore.Controllers
         public async Task<IActionResult> Ship(int id)
         {
             await _orderService.Ship(id);
-            return NoContent();
+            return Ok();
         }
 
     }

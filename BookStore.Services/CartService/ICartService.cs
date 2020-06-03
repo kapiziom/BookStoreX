@@ -10,8 +10,7 @@ namespace BookStore.Services
     public interface ICartService : IGenericService<CartElement>
     {
         Task<List<CartElement>> GetUsersCart(string userId);
-        Task<Result<CartElement>> AddToCart(CartElement addcart, string userId);
-        Task<Result<CartElement>> ChangeNumberOfBooksInCart(int bookId, int numberOfBooks, string userId);
+        Task<CartElement> AddCart(CartElement cartElement, string userId);
         Task DeleteCart(string userId);
         Task DeleteCartElement(int id, string userId);
     }

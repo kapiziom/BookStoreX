@@ -21,6 +21,6 @@ namespace BookStore.Services
             Expression<Func<Book, TKey>> order, int page, int itemsPerPage,
             params Expression<Func<Book, object>>[] includeExpressions);
 
-        Task<PagedList<Book>> GetCheapes6ByCategory(string category);
+        Task ChangeBookInStock(int BookId, int NumberOfBooks);
     }
 }

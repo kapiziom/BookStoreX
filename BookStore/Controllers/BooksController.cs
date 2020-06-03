@@ -83,7 +83,7 @@ namespace BookStore.Controllers
         [HttpGet("NewBooksTOP6")]
         public async Task<PagedList<BooksWithoutDetailsVM>> NewestTop6()
         {
-            var books = await _bookService.GetPagedBooks(null, x => x.AddedToStore, 1, 6);
+            var books = await _bookService.GetPagedBooks(m => m.BookId > 0, x => x.AddedToStore, 1, 6);
             var vm = new PagedList<BooksWithoutDetailsVM>()
             {
                 TotalItems = books.TotalItems,
@@ -102,7 +102,7 @@ namespace BookStore.Controllers
         [HttpGet("BestSellersTOP6")]
         public async Task<PagedList<BooksWithoutDetailsVM>> BestSellersTop6()
         {
-            var books = await _bookService.GetPagedBooks(null, x => x.Sold, 1, 6);
+            var books = await _bookService.GetPagedBooks(m => m.BookId > 0, x => x.Sold, 1, 6);
             var vm = new PagedList<BooksWithoutDetailsVM>()
             {
                 TotalItems = books.TotalItems,

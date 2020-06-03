@@ -58,10 +58,7 @@ namespace BookStore.Services
             var BookToUpdate = await FindAsync(id);
             if (BookToUpdate == null)
                 throw new BookStoreXException(404, "Book Not Found");
-            if (string.IsNullOrEmpty(book.CoverUri))
-            {
-                BookToUpdate.CoverUri = "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/1024px-No_image_available.svg.png";
-            }
+
             BookToUpdate.Title = book.Title;
             BookToUpdate.Publisher = book.Publisher;
             BookToUpdate.PublishedDate = book.PublishedDate;
@@ -80,10 +77,10 @@ namespace BookStore.Services
             else
                 BookToUpdate.DiscountPrice = book.DiscountPrice;
 
-            var result = Validate(book);
+            var result = Validate(BookToUpdate);
             if (result.Succeeded)
             {
-                return await _repository.UpdateAsync(book);
+                return await _repository.UpdateAsync(BookToUpdate);
             }
             throw new BookStoreXException(400, "invalid book", result);
         }
@@ -99,11 +96,15 @@ namespace BookStore.Services
             params Expression<Func<Book, object>>[] includeExpressions) 
             => await _repository.GetPagedAsync(filter, order, page, itemsPerPage, includeExpressions);
 
-        public async Task<PagedList<Book>> GetCheapes6ByCategory(string category)
+        public async Task ChangeBookInStock(int BookId, int NumberOfBooks)
         {
-            return await GetPagedBooks(x => x.Category.CategoryName == category, x => x.Price, 1, 6, x => x.Category);
-        }
+            var book = await GetBookByID(BookId);
 
+            if (NumberOfBooks > book.InStock)
+                throw new BookStoreXException(409, "You cant get more books than we have");
+
+            book.InStock = book.InStock - NumberOfBooks;
+        }
 
     }
 }

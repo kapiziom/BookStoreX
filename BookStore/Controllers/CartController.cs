@@ -31,7 +31,7 @@ namespace BookStore.Controllers
         {
             string userId = User.Claims.First(c => c.Type == "UserID").Value;
             var cartItem = _mapper.Map<CartElement>(addcart);
-            await _cartService.AddToCart(cartItem, userId);
+            await _cartService.AddCart(cartItem, userId);
             return Ok(new { meesage = "Item successfully added to your cart" });
         }
 
@@ -73,16 +73,16 @@ namespace BookStore.Controllers
         /// <summary>
         /// update number of books in current user's cart
         /// </summary>
-        /// <param name="bookID"></param>
-        /// <param name="numberOfBooks"></param>
+        /// <param name="update"></param>
         /// <returns></returns>
         [HttpPut("EditBooksNumber/setNumber/{bookID}/{numberOfBooks}")]
         [Authorize]
-        public async Task<IActionResult> EditCartElement(int bookID, int numberOfBooks)
+        public async Task<IActionResult> EditCartElement(AddCartElementVM update)
         {
             string userId = User.Claims.First(c => c.Type == "UserID").Value;
-            var result = await _cartService.ChangeNumberOfBooksInCart(bookID, numberOfBooks, userId);
-            return Ok(result.Value);
+            var cartItem = _mapper.Map<CartElement>(update);
+            var result = await _cartService.AddCart(cartItem, userId);
+            return Ok(new { NewNumberOfBooksValue = result.NumberOfBooks});
         }
 
         
