@@ -31,7 +31,7 @@ namespace BookStore.Controllers
         }
 
         [HttpGet("UsersList")]
-        //[Authorize(Roles = "Administrator")]
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> UsersList()
         {
             var users = _userManager.Users;

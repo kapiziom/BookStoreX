@@ -33,28 +33,6 @@ namespace BookStore.Controllers
         }
 
         /// <summary>
-        /// Paged list by category
-        /// </summary>
-        /// <param name="category"></param>
-        /// <param name="page"></param>
-        /// <param name="itemsPerPage"></param>
-        /// <returns></returns>
-        [HttpGet("{category}/{page}/{itemsPerPage}")]
-        public async Task<PagedList<BooksWithoutDetailsVM>> GetPagedBooksByCategory(string category, int page, int itemsPerPage)
-        {
-            var books = await _bookService.GetPagedBooks(m => m.Category.CategoryName == category, x => x.AddedToStore, page, itemsPerPage);
-            var vm = new PagedList<BooksWithoutDetailsVM>()
-            {
-                TotalItems = books.TotalItems,
-                PageCount = books.PageCount,
-                Page = page,
-                ItemsPerPage = itemsPerPage,
-                Items = _mapper.Map<List<BooksWithoutDetailsVM>>(books.Items),
-            };
-            return vm;
-        }
-
-        /// <summary>
         /// Paged List
         /// </summary>
         /// <param name="page"></param>
@@ -72,6 +50,28 @@ namespace BookStore.Controllers
                 Page = page,
                 ItemsPerPage = itemsPerPage,
                 Items = response,
+            };
+            return vm;
+        }
+
+        /// <summary>
+        /// Paged list by category
+        /// </summary>
+        /// <param name="category"></param>
+        /// <param name="page"></param>
+        /// <param name="itemsPerPage"></param>
+        /// <returns></returns>
+        [HttpGet("{category}/{page}/{itemsPerPage}")]
+        public async Task<PagedList<BooksWithoutDetailsVM>> GetPagedBooksByCategory(string category, int page, int itemsPerPage)
+        {
+            var books = await _bookService.GetPagedBooks(m => m.Category.CategoryName == category, x => x.AddedToStore, page, itemsPerPage);
+            var vm = new PagedList<BooksWithoutDetailsVM>()
+            {
+                TotalItems = books.TotalItems,
+                PageCount = books.PageCount,
+                Page = page,
+                ItemsPerPage = itemsPerPage,
+                Items = _mapper.Map<List<BooksWithoutDetailsVM>>(books.Items),
             };
             return vm;
         }
