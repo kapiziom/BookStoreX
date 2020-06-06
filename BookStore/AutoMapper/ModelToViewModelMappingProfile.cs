@@ -37,7 +37,7 @@ namespace BookStore.AutoMapper
                 .ForMember(dest => dest.BookId, opt => opt.MapFrom(src => src.BookId))
                 .ForMember(dest => dest.Title, opt => opt.MapFrom(src => src.Title))
                 .ForMember(dest => dest.Available, opt => opt.MapFrom(src => src.BookId))
-                .ForMember(dest => dest.CoverUri, opt => opt.MapFrom(src => src.BookId))
+                .ForMember(dest => dest.CoverUri, opt => opt.MapFrom(src => src.CoverUri))
                 .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Price))
                 .ForMember(dest => dest.IsDiscount, opt => opt.MapFrom(src => src.IsDiscount))
                 .ForMember(dest => dest.DisPrice, opt => opt.MapFrom(src => src.DiscountPrice))
