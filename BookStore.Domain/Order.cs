@@ -11,8 +11,6 @@ namespace BookStore.Domain
         public int OrderId { get; set; }
         public string UserId { get; set; }
         public AppUser AppUser { get; set; }
-        public string Email { get; set; }
-        public string Phone { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string City { get; set; }
@@ -25,6 +23,16 @@ namespace BookStore.Domain
 
         public bool IsShipped { get; set; }
         public ICollection<OrderDetail> OrderDetails { get; set; }
-        
+
+        public decimal TotalPriceSum()
+        {
+            decimal totalprice = 0;
+            foreach(var item in OrderDetails)
+            {
+                totalprice = totalprice + item.UnitPrice * item.NumberOfBooks;
+            }
+            return totalprice;
+        }
+
     }
 }

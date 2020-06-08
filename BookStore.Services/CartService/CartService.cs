@@ -58,12 +58,17 @@ namespace BookStore.Services
         {
             var cart = await _repository.FirstOrDefaultAsync(m => m.BookID == cartElement.BookID && m.UserId == userId);
 
-            await _bookService.ChangeBookInStock(cartElement.BookID, cartElement.NumberOfBooks - cart.NumberOfBooks);
+            await _bookService.ChangeBookInStock(cartElement.BookID, cartElement.NumberOfBooks);
 
-            cart.NumberOfBooks = cartElement.NumberOfBooks;
+            cart.NumberOfBooks = cart.NumberOfBooks + cartElement.NumberOfBooks;
             cart.CreatedDate = DateTime.Now;
 
-            return await _repository.UpdateAsync(cart);
+            var result = Validate(cart);
+            if (result.Succeeded)
+            {
+                return await _repository.UpdateAsync(cart);
+            }
+            throw new BookStoreXException(400, null, result);
         }
 
         //Clear Cart, delete Cart items assigned to user

@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using AutoMapper;
 using BookStore.ViewModels;
+using System.Security.Claims;
 
 namespace BookStore.Controllers
 {
@@ -18,19 +19,33 @@ namespace BookStore.Controllers
     public class OrderController : ControllerBase
     {
         private readonly IOrderService _orderService;
+        private readonly IAddressService _addressService;
         private readonly IMapper _mapper;
-        public OrderController(IOrderService orderService, IMapper mapper)
+        public OrderController(IOrderService orderService, IAddressService addressService, IMapper mapper)
         {
             _orderService = orderService;
+            _addressService = addressService;
             _mapper = mapper;
         }
 
         [HttpPost("PlaceOrder")]
         [Authorize]
-        public async Task<IActionResult> PlaceOrder([FromBody] PlaceOrderVM place)
+        public async Task<IActionResult> PlaceOrder()
         {
             string userId = User.Claims.First(c => c.Type == "UserID").Value;
-            await _orderService.PlaceOrder(userId, _mapper.Map<Order>(place));
+            var address = await _addressService.GetAddressByUserId(userId);
+            var orderAddress = new Order()
+            {
+                UserId = userId,
+                FirstName = address.FirstName,
+                LastName = address.LastName,
+                City = address.City,
+                Country = address.Country,
+                PostalCode = address.PostalCode,
+                Street = address.Street,
+                Number = address.Number,
+            };
+            await _orderService.PlaceOrder(userId, orderAddress);
             return Ok(new { succeeded = true });
         }
 
@@ -56,12 +71,20 @@ namespace BookStore.Controllers
         public async Task<IActionResult> OrderDetails(int id)
         {
             string userId = User.Claims.First(c => c.Type == "UserID").Value;
+            var role = User.Claims.First(c => c.Type == ClaimsIdentity.DefaultRoleClaimType).Value;
             var order = await _orderService.GetOrderById(id, userId);
-            var vm = _mapper.Map<OrderWithDetailsVM>(order);
-            return Ok(vm);
+
+            if (userId == order.UserId || role == "Worker" || role == "Administrator")
+            {
+                var vm = _mapper.Map<OrderWithDetailsVM>(order);
+                vm.OrderDetailsVM = _mapper.Map<List<OrderDetailsVM>>(order.OrderDetails);
+                return Ok(vm);
+            }
+            else return Forbid();
+            
         }
 
-        [HttpGet("Unshipped")]
+        [HttpGet("Unshipped/{page}/{itemsPerPage}")]
         [Authorize(Roles = "Administrator,Worker")]
         public async Task<PagedList<OrderVM>> Unshipped(int page, int itemsPerPage)
         {

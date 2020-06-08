@@ -8,6 +8,6 @@ namespace BookStore.Services
 {
     public interface IOrderDetailService
     {
-        Task<List<OrderDetail>> GenerateOrderDetails(string userId, Order order, decimal totalprice);
+        Task<List<OrderDetail>> GenerateOrderDetails(string userId, Order order);
     }
 }

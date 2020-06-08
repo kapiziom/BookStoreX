@@ -63,8 +63,6 @@ namespace BookStore.AutoMapper
                 .ForPath(dest => dest.CategoryName, opt => opt.MapFrom(src => src.CategoryName));
 
             CreateMap<PlaceOrderVM, Order>()
-                .ForPath(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
-                .ForPath(dest => dest.Phone, opt => opt.MapFrom(src => src.Phone))
                 .ForPath(dest => dest.FirstName, opt => opt.MapFrom(src => src.FirstName))
                 .ForPath(dest => dest.LastName, opt => opt.MapFrom(src => src.LastName))
                 .ForPath(dest => dest.City, opt => opt.MapFrom(src => src.City))

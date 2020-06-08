@@ -23,12 +23,6 @@ namespace BookStore.Data.DbContext.Mapping
                 .WithOne(t => t.Order)
                 .HasForeignKey(t => t.OrderID);
 
-            builder.Property(t => t.Email)
-                .IsRequired();
-
-            builder.Property(t => t.Phone)
-                .IsRequired();
-
             builder.Property(t => t.FirstName)
                 .IsRequired();
 

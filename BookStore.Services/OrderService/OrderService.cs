@@ -3,6 +3,7 @@ using BookStore.Domain.Common;
 using BookStore.Domain.Exceptions;
 using BookStore.Domain.Interfaces;
 using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,12 +15,15 @@ namespace BookStore.Services
     public class OrderService : GenericService<Order>, IOrderService
     {
         private readonly IOrderDetailService _detailService;
+        private readonly IAddressService _addressService;
         public OrderService(
             IGenericRepository<Order> orderRepository,
             IValidator<Order> validator,
-            IOrderDetailService orderDetailService) : base(orderRepository, validator) 
+            IOrderDetailService orderDetailService,
+            IAddressService addressService) : base(orderRepository, validator) 
         {
             _detailService = orderDetailService;
+            _addressService = addressService;
         }
 
 
@@ -30,11 +34,10 @@ namespace BookStore.Services
             if (!result.IsValid)
                 throw new BookStoreXException(400, null, result.Errors);
 
-            decimal totalprice = 0;
-            order.OrderDetails = await _detailService.GenerateOrderDetails(userId, order, totalprice);
+            order.OrderDetails = await _detailService.GenerateOrderDetails(userId, order);
             
             order.UserId = userId;
-            order.TotalPrice = totalprice;
+            order.TotalPrice = order.TotalPriceSum();
             order.OrderDate = DateTime.Now;
             order.IsShipped = false;
             await _repository.InsertAsync(order);
@@ -43,15 +46,18 @@ namespace BookStore.Services
 
         public async Task<Order> GetOrderById(int id, string userId)
         {
-            var order = await _repository.FirstOrDefaultAsync(m => m.OrderId == id, x => x.OrderDetails);
+            var order = _repository.Query().Where(m => m.OrderId == id)
+                .Include(x => x.OrderDetails).ThenInclude(y => y.Book);
 
-            if(order == null)
+            var res = await order.FirstOrDefaultAsync();
+
+            if(res == null)
                 throw new BookStoreXException(404, "Order not found");
+            
+            //if (res.UserId != userId)
+            //    throw new BookStoreXException(403, "You are not allowed");
 
-            if (order.UserId != userId)
-                throw new BookStoreXException(403, "You are not allowed");
-
-            return order;
+            return res;
         }
             
         

@@ -72,7 +72,6 @@ namespace BookStore.AutoMapper
 
             CreateMap<Order, OrderVM>()
                .ForMember(dest => dest.OrderId, opt => opt.MapFrom(src => src.OrderId))
-               .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
                .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.FirstName))
                .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.LastName))
                .ForMember(dest => dest.City, opt => opt.MapFrom(src => src.City))
@@ -86,7 +85,6 @@ namespace BookStore.AutoMapper
 
             CreateMap<Order, OrderWithDetailsVM>()
                .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId))
-               .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
                .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.FirstName + " " + src.LastName))
                .ForMember(dest => dest.Country, opt => opt.MapFrom(src => src.Country))
                .ForMember(dest => dest.PostalCodeNCity, opt => opt.MapFrom(src => src.PostalCode + " " + src.City))
@@ -96,22 +94,22 @@ namespace BookStore.AutoMapper
                .ForMember(dest => dest.IsShipped, opt => opt.MapFrom(src => src.IsShipped))
                .AfterMap((s, d) =>
                {
-                   //prepare lists
-                   var details = new List<OrderDetailsVM>();
+                   ////prepare lists
+                   //var details = new List<OrderDetailsVM>();
 
-                   //map tags
-                   foreach (var item in s.OrderDetails)
-                   {
-                       var detail = new OrderDetailsVM()
-                       {
-                           BootTitle = item.Book.Title,
-                           NumberOfBooks = item.NumberOfBooks,
-                           Price = item.TotalPriceSet(),
-                       };
-                       details.Add(detail);
-                   }
+                   ////map tags
+                   //foreach (var item in s.OrderDetails)
+                   //{
+                   //    var detail = new OrderDetailsVM()
+                   //    {
+                   //        BootTitle = item.Book.Title,
+                   //        NumberOfBooks = item.NumberOfBooks,
+                   //        Price = item.TotalPriceSet(),
+                   //    };
+                   //    details.Add(detail);
+                   //}
 
-                   d.OrderDetailsVM = details;
+                   //d.OrderDetailsVM = details;
 
                });
 

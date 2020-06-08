@@ -68,7 +68,14 @@ namespace BookStore.Controllers
         [HttpPost("Register")]
         public async Task<object> Register([FromBody] RegisterVM model)
         {
-            var user = new AppUser { Id = Guid.NewGuid().ToString(), UserName = model.UserName, Email = model.Email, CreationDate = DateTime.Now, Address = new Address() };
+            var user = new AppUser {
+                Id = Guid.NewGuid().ToString(),
+                UserName = model.UserName,
+                Email = model.Email,
+                CreationDate = DateTime.Now,
+                };
+            var Address = new Address() { UserId = user.Id };
+            user.Address = Address;
             try
             {
                 var result = await _userManager.CreateAsync(user, model.Password);
@@ -107,8 +114,8 @@ namespace BookStore.Controllers
             var usermodel = await _userManager.FindByIdAsync(userId);
             try
             {
-                usermodel.Email = email.NewEmail;
-                usermodel.NormalizedEmail = email.NewEmail.Normalize();
+                usermodel.Email = email.Email;
+                usermodel.NormalizedEmail = _userManager.NormalizeEmail(usermodel.Email);
                 var result = await _userManager.UpdateAsync(usermodel);
                 return Ok(result);
             }
@@ -116,6 +123,15 @@ namespace BookStore.Controllers
             {
                 throw ex;
             }
+        }
+
+        [HttpGet("Profile")]
+        [Authorize]
+        public async Task<object> UserProfile()
+        {
+            string userId = User.Claims.First(c => c.Type == "UserID").Value;
+            var user = await _userManager.FindByIdAsync(userId);
+            return new { userName = user.UserName, email = user.Email };
         }
 
         [HttpGet("Address")]
@@ -134,7 +150,7 @@ namespace BookStore.Controllers
             string userId = User.Claims.First(c => c.Type == "UserID").Value;
             var address = _mapper.Map<Address>(addAddress);
             var result = await _addressService.UpdateAddress(address, userId);
-            return Ok(_mapper.Map<AddressVM>(address));
+            return Ok(_mapper.Map<AddressVM>(result));
         }
 
 

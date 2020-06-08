@@ -9,12 +9,6 @@ namespace BookStore.Domain.Validators
     {
         public OrderValidator()
         {
-            RuleFor(x => x.Email)
-                .NotEmpty().WithMessage("Email required")
-                .EmailAddress().WithMessage("Email address is not valid. Example: email@elo.com");
-            RuleFor(x => x.Phone)
-                .Matches(@"^[2-9]\d{2}(-| )\d{3}(-| )\d{3,4}$")
-                .WithMessage("Phone number is invalid");
             RuleFor(x => x.FirstName)
                 .NotEmpty().WithMessage("First name required");
             RuleFor(x => x.LastName)

@@ -24,7 +24,7 @@ namespace BookStore.Services
         }
 
         //Use only in OrderService to generate OrderDetails with totalprice during PlaceOrder
-        public async Task<List<OrderDetail>> GenerateOrderDetails(string userId, Order order, decimal totalprice)
+        public async Task<List<OrderDetail>> GenerateOrderDetails(string userId, Order order)
         {
             var cart = await _cartService.GetUsersCart(userId);//if empty throw not found
 
@@ -43,9 +43,6 @@ namespace BookStore.Services
                 var book = await _bookService.GetBookByID(m.BookID);
                 book.Sold = book.Sold + m.NumberOfBooks;
 
-                //totalprice +
-                totalprice = totalprice + detail.UnitPrice * detail.NumberOfBooks;
-
                 orderDetails.Add(detail);
             }
 
@@ -53,5 +50,7 @@ namespace BookStore.Services
             _cartService.RemoveRange(cart);
             return orderDetails;
         }
+
+
     }
 }
